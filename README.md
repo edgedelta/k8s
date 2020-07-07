@@ -1,1 +1,1 @@
-# k8s
+# Edge Delta Kubernetes Repository
