@@ -27,10 +27,10 @@ spec:
         image: docker.io/edgedelta/agent:latest
         env:
           - name: ED_API_KEY
-          valueFrom:
-            secretKeyRef:
-              key: ed-api-key
-              name: ed-api-key
+            valueFrom:
+              secretKeyRef:
+                key: ed-api-key
+                name: ed-api-key
         command:
           - /edgedelta/edgedelta
         resources:
