@@ -18,3 +18,4 @@ spec:
       - name: flog
         image: docker.io/edgedelta/flog:latest
         args: ["-f", "apache_combined_simple", "-l", "-d", "0.1", "-e", "300", "-c", "200"]
+      restartPolicy: OnFailure
