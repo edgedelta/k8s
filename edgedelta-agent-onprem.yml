@@ -28,7 +28,6 @@ spec:
         env:
           - name: ED_BACKEND_DISABLED
             value: "1"
-          - name:   
         command:
           - /edgedelta/edgedelta
           - -c
