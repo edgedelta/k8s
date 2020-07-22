@@ -22,6 +22,7 @@ spec:
         version: v1
         kubernetes.io/cluster-service: "true"
     spec:
+      serviceAccountName: edgedelta
       containers:
       - name: edgedelta
         image: docker.io/edgedelta/agent:latest
@@ -45,6 +46,10 @@ spec:
           - name: varlibdockercontainers
             mountPath: /var/lib/docker/containers
             readOnly: true
+        # Required for OpenShift or SELinux enabled K8s clusters
+        # securityContext:
+        #    runAsUser: 0
+        #    privileged: true
       terminationGracePeriodSeconds: 10
       volumes:
         - name: varlog
