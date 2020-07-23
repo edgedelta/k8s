@@ -32,6 +32,12 @@ spec:
               secretKeyRef:
                 key: ed-api-key
                 name: ed-api-key
+          # Uncomment if proxy setup needed
+          # More details: https://github.com/golang/net/blob/master/http/httpproxy/proxy.go#L27
+          # - name:  HTTP_PROXY
+          #   value: my.proxy.com
+          # - name:  NO_PROXY
+          #   value: skip.proxy.com
         command:
           - /edgedelta/edgedelta
         resources:
