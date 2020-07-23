@@ -1,6 +1,13 @@
-# Kubernetes configuration for edgedelta agent
+# Kubernetes configuration repository
 
-## Important notes
-- Please make sure extended features are commented out
-- Please make sure common features across different deployment options are consistent.
-- Please avoid merging directly to master.
+## Documentation
+https://docs.edgedelta.com/
+
+## Deployments
+[Standard deployment](edgedelta-agent.yml)
+[On-prem deployment](edgedelta-agent-onprem.yml)
+[On-prem deployment configuration](edgedelta-agent-onprem-config.yml)
+
+## Notes
+- Please uncomment HTTP_PROXY section if needed.
+- Please uncomment SecurityContext section if needed.
