@@ -48,8 +48,8 @@ spec:
             readOnly: true
         # Required for OpenShift or SELinux enabled K8s clusters
         # securityContext:
-        #    runAsUser: 0
-        #    privileged: true
+        #   runAsUser: 0
+        #   privileged: true
       terminationGracePeriodSeconds: 10
       volumes:
         - name: varlog
