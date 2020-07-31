@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: edgedelta-agent-config
-  namespace: edgedelta
-apiVersion: v1
-data:
-  config.yml: |-
-<COPY_YOUR_CONFIG>

@@ -101,3 +101,8 @@ metadata:
   namespace: edgedelta
   labels:
     k8s-app: edgedelta-logging
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: edgedelta
