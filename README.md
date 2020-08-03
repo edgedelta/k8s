@@ -6,7 +6,6 @@
 ## Deployments
 - [Standard deployment](edgedelta-agent.yml)
 - [On-prem deployment](edgedelta-agent-onprem.yml)
-- [On-prem deployment configuration](edgedelta-agent-onprem-config.yml)
 
 ## Notes
 - Please uncomment HTTP_PROXY section if needed.

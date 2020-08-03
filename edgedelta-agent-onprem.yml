@@ -22,6 +22,7 @@ spec:
         version: v1
         kubernetes.io/cluster-service: "true"
     spec:
+      serviceAccountName: edgedelta
       containers:
       - name: edgedelta
         image: docker.io/edgedelta/agent:latest
@@ -61,3 +62,55 @@ spec:
         - name: configMap
           configMap:
             name: edgedelta-agent-config
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: edgedelta
+subjects:
+- kind: ServiceAccount
+  name: edgedelta
+  namespace: edgedelta
+roleRef:
+  kind: ClusterRole
+  name: edgedelta
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: edgedelta
+  labels:
+    k8s-app: edgedelta-logging
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources:
+  - namespaces
+  - pods
+  verbs:
+  - get
+  - watch
+  - list
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: edgedelta
+  namespace: edgedelta
+  labels:
+    k8s-app: edgedelta-logging
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: edgedelta
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: edgedelta-agent-config
+  namespace: edgedelta
+apiVersion: v1
+data:
+  config.yml: |-
+<COPY_YOUR_CONFIG>
