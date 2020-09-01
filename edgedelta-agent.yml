@@ -8,6 +8,8 @@ kind: DaemonSet
 metadata:
   name: edgedelta
   namespace: edgedelta
+  annotations:
+    prometheus.io/scrape: "true"
   labels:
     k8s-app: edgedelta-logging
     version: v1
@@ -29,14 +31,23 @@ spec:
     spec:
       serviceAccountName: edgedelta
       containers:
-      - name: edgedelta
+      - name: edgedelta-agent
         image: docker.io/edgedelta/agent:latest
+        ports:
+          - name: metrics
+            containerPort: 6062
+            hostPort: 6062
         env:
           - name: ED_API_KEY
             valueFrom:
+              # kubectl create secret generic ed-api-key \
+              #   --namespace=edgedelta \
+              #   --from-literal=ed-api-key="2c7a5780-..."
               secretKeyRef:
                 key: ed-api-key
                 name: ed-api-key
+          - name:  STORE_PORT
+            value: "6062"
           # Uncomment if proxy setup needed
           # More details: https://github.com/golang/net/blob/master/http/httpproxy/proxy.go#L27
           # - name:  HTTP_PROXY
@@ -47,10 +58,10 @@ spec:
           - /edgedelta/edgedelta
         resources:
           limits:
-            memory: 100Mi
+            memory: 512Mi
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: 200m
+            memory: 200Mi
         volumeMounts:
           - name: varlog
             mountPath: /var/log
@@ -61,6 +72,9 @@ spec:
         # securityContext:
         #   runAsUser: 0
         #   privileged: true
+        imagePullPolicy: Always
+      imagePullSecrets:
+        - name: regcred
       terminationGracePeriodSeconds: 10
       volumes:
         - name: varlog

@@ -8,6 +8,8 @@ kind: DaemonSet
 metadata:
   name: edgedelta
   namespace: edgedelta
+  annotations:
+    prometheus.io/scrape: "true"
   labels:
     k8s-app: edgedelta-logging
     version: v1
@@ -29,21 +31,33 @@ spec:
     spec:
       serviceAccountName: edgedelta
       containers:
-      - name: edgedelta
+      - name: edgedelta-agent
         image: docker.io/edgedelta/agent:latest
+        ports:
+          - name: metrics
+            containerPort: 6062
+            hostPort: 6062
         env:
           - name: ED_BACKEND_DISABLED
             value: "1"
+          - name:  STORE_PORT
+            value: "6062"
+          # Uncomment if proxy setup needed
+          # More details: https://github.com/golang/net/blob/master/http/httpproxy/proxy.go#L27
+          # - name:  HTTP_PROXY
+          #   value: my.proxy.com
+          # - name:  NO_PROXY
+          #   value: skip.proxy.com
         command:
           - /edgedelta/edgedelta
           - -c
           - /config/config.yml
         resources:
           limits:
-            memory: 100Mi
+            memory: 512Mi
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: 200m
+            memory: 200Mi
         volumeMounts:
           - name: config
             mountPath: /config
@@ -110,7 +124,6 @@ kind: ConfigMap
 metadata:
   name: edgedelta-agent-config
   namespace: edgedelta
-apiVersion: v1
 data:
   config.yml: |-
 <COPY_YOUR_CONFIG>
