@@ -57,7 +57,7 @@ spec:
             memory: 512Mi
           requests:
             cpu: 200m
-            memory: 200Mi
+            memory: 256Mi
         volumeMounts:
           - name: config
             mountPath: /config
