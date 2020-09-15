@@ -48,6 +48,11 @@ spec:
           #   value: my.proxy.com
           # - name:  NO_PROXY
           #   value: skip.proxy.com
+          # pass node hostname to agent
+          - name: ED_HOST_OVERRIDE
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
         command:
           - /edgedelta/edgedelta
           - -c
