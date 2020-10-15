@@ -33,6 +33,11 @@ spec:
       containers:
       - name: edgedelta-agent
         image: docker.io/edgedelta/agent:latest
+        ports:
+          # port is exposed to be scraped by prometheus.
+          - name: metrics
+            containerPort: 6062
+            hostPort: 6062
         env:
           - name: ED_API_KEY
             valueFrom:
@@ -42,6 +47,9 @@ spec:
               secretKeyRef:
                 key: ed-api-key
                 name: ed-api-key
+          # port is exposed to be scraped by prometheus.    
+          - name:  STORE_PORT
+            value: "6062"
           # Uncomment if proxy setup needed
           # More details: https://github.com/golang/net/blob/master/http/httpproxy/proxy.go#L27
           # - name:  HTTP_PROXY
