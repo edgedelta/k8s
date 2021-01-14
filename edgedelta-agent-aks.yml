@@ -32,6 +32,13 @@ spec:
       serviceAccountName: edgedelta
       nodeSelector:
         beta.kubernetes.io/os: windows
+      # specifying toleratations enables the daemonset on pods with custom taint.
+      # default tolerations in this spec matches all taints so edgedelta-win daemonset will run on all nodes with any taint or no taint
+      # ref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+      tolerations:
+      - key: ""
+        operator: "Exists"
+        effect: "NoSchedule"
       containers:
       - name: edgedelta-agent
         image: docker.io/edgedelta/agent:latest-multi
@@ -105,6 +112,13 @@ spec:
       serviceAccountName: edgedelta
       nodeSelector:
         beta.kubernetes.io/os: linux
+      # specifying toleratations enables the daemonset on pods with custom taint.
+      # default tolerations in this spec matches all taints so edgedelta daemonset will run on all nodes with any taint or no taint
+      # ref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+      tolerations:
+      - key: ""
+        operator: "Exists"
+        effect: "NoSchedule"
       containers:
       - name: edgedelta-agent
         image: docker.io/edgedelta/agent:latest-multi
