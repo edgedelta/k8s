@@ -17,5 +17,7 @@ spec:
       containers:
       - name: flog
         image: docker.io/edgedelta/flog:latest
-        args: ["-f", "apache_combined_simple", "-l", "-d", "0.1", "-e", "1500", "-c", "500"]
+        args: ["-f", "rfc3164", "-l", "-d", "0.1", "-e", "1500", "-c", "500"]
+        # Alternatively use apache combined log format
+        # args: ["-f", "apache_combined_simple", "-l", "-d", "0.1", "-e", "1500", "-c", "500"]
       restartPolicy: Always
