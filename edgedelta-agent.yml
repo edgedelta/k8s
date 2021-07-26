@@ -108,6 +108,7 @@ rules:
   - namespaces
   - pods
   - events
+  - nodes
   verbs:
   - get
   - watch
@@ -123,6 +124,14 @@ rules:
   - update
   - patch
   - delete
+- apiGroups: ["metrics.k8s.io"]
+  resources:
+  - pods
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: v1
 kind: ServiceAccount
