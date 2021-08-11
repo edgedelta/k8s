@@ -73,7 +73,7 @@ spec:
         imagePullPolicy: Always
       imagePullSecrets:
         - name: regcred
-      restartPolicy: Always      
+      restartPolicy: Always
       terminationGracePeriodSeconds: 10
       volumes:
         - name: dockercontainers

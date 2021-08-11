@@ -47,7 +47,7 @@ spec:
               secretKeyRef:
                 key: ed-api-key
                 name: ed-api-key
-          # port is exposed to be scraped by prometheus.    
+          # port is exposed to be scraped by prometheus.
           - name:  STORE_PORT
             value: "6062"
           # Uncomment if proxy setup needed
