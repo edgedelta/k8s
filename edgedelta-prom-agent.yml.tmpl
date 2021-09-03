@@ -61,6 +61,8 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
+          - name: ED_LEADER_ELECTION_ENABLED
+            value: "1"
         command:
           - /edgedelta/edgedelta
         resources:
