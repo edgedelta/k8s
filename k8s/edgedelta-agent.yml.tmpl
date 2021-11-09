@@ -59,13 +59,14 @@ spec:
           - /edgedelta/edgedelta
         resources:
           limits:
-            memory: 512Mi
+            memory: 2048Mi
           requests:
             cpu: 200m
             memory: 256Mi
         volumeMounts:
           - name: varlog
             mountPath: /var/log
+            readOnly: true
           - name: varlibdockercontainers
             mountPath: /var/lib/docker/containers
             readOnly: true
