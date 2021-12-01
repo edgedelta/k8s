@@ -32,7 +32,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
-        image: docker.io/edgedelta/agent:latest
+        image: gcr.io/edgedelta/agent:v0.1.15
         env:
           - name: ED_API_KEY
             valueFrom:
@@ -53,17 +53,20 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
+          - name: ED_LEADER_ELECTION_ENABLED
+            value: "1"
         command:
           - /edgedelta/edgedelta
         resources:
           limits:
-            memory: 512Mi
+            memory: 2048Mi
           requests:
             cpu: 200m
             memory: 256Mi
         volumeMounts:
           - name: varlog
             mountPath: /var/log
+            readOnly: true
           - name: varlibdockercontainers
             mountPath: /var/lib/docker/containers
             readOnly: true
@@ -71,7 +74,6 @@ spec:
         # securityContext:
         #   runAsUser: 0
         #   privileged: true
-        imagePullPolicy: Always
       imagePullSecrets:
         - name: regcred
       terminationGracePeriodSeconds: 10

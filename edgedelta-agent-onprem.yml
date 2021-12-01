@@ -32,7 +32,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
-        image: docker.io/edgedelta/agent:latest
+        image: gcr.io/edgedelta/agent:v0.1.15
         env:
           - name: ED_BACKEND_DISABLED
             value: "1"
@@ -47,13 +47,15 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
+          - name: ED_LEADER_ELECTION_ENABLED
+            value: "1"
         command:
           - /edgedelta/edgedelta
           - -c
           - /config/config.yml
         resources:
           limits:
-            memory: 512Mi
+            memory: 2048Mi
           requests:
             cpu: 200m
             memory: 256Mi
