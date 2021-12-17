@@ -29,7 +29,6 @@ spec:
         version: v1
         kubernetes.io/cluster-service: "true"
     spec:
-      serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
         image: gcr.io/edgedelta/agent:v0.1.15
@@ -91,7 +90,7 @@ metadata:
   name: edgedelta
 subjects:
 - kind: ServiceAccount
-  name: edgedelta
+  name: default
   namespace: edgedelta
 roleRef:
   kind: ClusterRole
@@ -134,11 +133,3 @@ rules:
   - get
   - list
   - watch
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: edgedelta
-  namespace: edgedelta
-  labels:
-    k8s-app: edgedelta-logging
