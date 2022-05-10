@@ -32,7 +32,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.23
+        image: gcr.io/edgedelta/agent:v0.1.24
         ports:
           # port is exposed to be scraped by prometheus.
           - name: metrics
