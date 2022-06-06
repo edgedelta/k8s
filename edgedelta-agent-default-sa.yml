@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.24
+        image: gcr.io/edgedelta/agent:v0.1.25
         env:
           - name: ED_API_KEY
             valueFrom:
@@ -67,6 +67,8 @@ spec:
             mountPath: /var/log
             readOnly: true
           - name: varlibdockercontainers
+            # Some Kubernetes distributions may use /docker/containers instead of standard /var/lib/docker/containers
+            # Update mountPath to match the actual container log folder path
             mountPath: /var/lib/docker/containers
             readOnly: true
         # Required for OpenShift or SELinux enabled K8s clusters
@@ -82,6 +84,7 @@ spec:
             path: /var/log
         - name: varlibdockercontainers
           hostPath:
+            # Update path below if you changed volumeMounts varlibdockercontainers mountPath
             path: /var/lib/docker/containers
 ---
 apiVersion: rbac.authorization.k8s.io/v1
