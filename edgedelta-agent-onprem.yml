@@ -32,7 +32,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.25
+        image: gcr.io/edgedelta/agent:v0.1.27
         env:
           - name: ED_BACKEND_DISABLED
             value: "1"
@@ -113,6 +113,7 @@ rules:
   - namespaces
   - pods
   - events
+  - nodes
   verbs:
   - get
   - watch

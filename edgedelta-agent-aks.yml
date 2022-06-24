@@ -191,6 +191,7 @@ rules:
   - namespaces
   - pods
   - events
+  - nodes
   verbs:
   - get
   - watch
