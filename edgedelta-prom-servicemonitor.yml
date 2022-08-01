@@ -8,7 +8,7 @@ metadata:
     k8s-apps: edgedelta-logging
     # release needs to match prometheus-operator release name
     # helm ls -n monitoring
-    release: promop
+    release: prom-kube-stack
   # name should match default servicemonitors
   # kubectl get servicemonitor -n monitoring
   name: promop-prometheus-operator-edgedelta
