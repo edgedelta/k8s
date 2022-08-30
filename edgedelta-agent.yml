@@ -32,7 +32,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.38
+        image: gcr.io/edgedelta/agent:v0.1.39
         env:
           - name: ED_API_KEY
             valueFrom:
@@ -116,6 +116,27 @@ rules:
   - nodes
   verbs:
   - get
+  - watch
+  - list
+- apiGroups: [""] # "" indicates the core API group
+  resources:
+  - events
+  verbs:
+  - create
+- apiGroups: ["apps"]
+  resources:
+  - daemonsets
+  - deployments
+  - replicasets
+  - statefulsets
+  verbs:
+  - watch
+  - list
+- apiGroups: ["batch"]
+  resources:
+  - jobs
+  - cronjobs
+  verbs:
   - watch
   - list
 - apiGroups: ["coordination.k8s.io"]
