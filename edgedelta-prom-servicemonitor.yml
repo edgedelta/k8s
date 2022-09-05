@@ -25,27 +25,3 @@ spec:
   selector:
     matchLabels:
       k8s-app: edgedelta-logging
----
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    prometheus.io/scrape: "true"
-  labels:
-    app: edgedelta
-    k8s-app: edgedelta-logging
-    jobLabel:  edgedelta
-  name: edgedelta-metrics
-  namespace: edgedelta
-spec:
-  ports:
-  - name: metrics
-    port: 6062
-    protocol: TCP
-    targetPort: 6062
-  selector:
-    k8s-app: edgedelta-logging
-  sessionAffinity: None
-  type: ClusterIP
-status:
-  loadBalancer: {}
