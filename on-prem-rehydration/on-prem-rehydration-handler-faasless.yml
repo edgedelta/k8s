@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rehydration-handler
+  namespace: edgedelta-rehydration
+  labels:
+    k8s-app: rehydration-handler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: rehydration-handler
+  template:
+    metadata:
+      labels:
+        k8s-app: rehydration-handler
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: handler
+        # image built on 2022-06-23 for on-prem release v0.1.2
+        image: gcr.io/edgedelta/function@sha256:6bd3d40a73656585fc44f53ed79ebb9e2b816e663584d6d4069423f7de853a95
+        ports:
+          - containerPort: 8080
+        command:
+          - /edgedelta/faas
+        env:
+          - name: ED_MODE
+            value: "prod"
+          - name: ED_REHYDRATION_PUSH_BATCH_SIZE
+            value: "10000"
+          - name: ED_HANDLER_NAME
+            value: "rehydrate"
+          - name: ED_REMOTE_REPOSITORY
+            value: "1"
+          - name: ED_REMOTE_TOKEN
+            valueFrom:
+              secretKeyRef:
+                key: ed-rehydration-token
+                name: ed-rehydration-token
+          - name: ED_REHYDRATION_MEMORY_THRESHOLD
+            value: 15G # This value should be less than memory limit of the pod, ideally 90% of the limit
+          - name: GOGC
+            value: "20"
+          - name: GODEBUG
+            value: madvdontneed=1
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 16000Mi
+          requests:
+            cpu: 1000m
+            memory: 16000Mi
+        imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rehydration-handler
+  namespace: edgedelta-rehydration
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+  selector:
+    k8s-app: rehydration-handler

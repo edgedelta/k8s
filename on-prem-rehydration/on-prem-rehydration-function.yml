@@ -1,0 +1,49 @@
+# reference https://docs.openfaas.com/reference/yaml/
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  rehydrate:
+    skip_build: true
+    # image built on 2022-06-23 for on-prem release v0.1.2
+    image: gcr.io/edgedelta/function@sha256:6bd3d40a73656585fc44f53ed79ebb9e2b816e663584d6d4069423f7de853a95
+    limits:
+      memory: 16000Mi
+    requests:
+      memory: 16000Mi
+    environment:
+      ED_MODE: prod
+      ED_REHYDRATION_PUSH_BATCH_SIZE: 10000
+      ED_HANDLER_NAME: rehydrate
+      ED_REMOTE_REPOSITORY: "1"
+      ED_REMOTE_TOKEN_FILE: /var/openfaas/secrets/ed-rehydration-token
+      ED_REHYDRATION_MEMORY_THRESHOLD: 15G # This value should be less than memory limit of the pod, ideally 90% of the limit
+      GOGC: 20
+      GODEBUG: madvdontneed=1
+    secrets:
+      - ed-rehydration-token
+    # in order to run rehydration function handler on specific nodes, uncomment below and specify a node label.
+    # constraints:
+    #  - "eks.amazonaws.com/nodegroup=rehydration-node-group"
+    labels:
+      com.openfaas.scale.min: 1
+      com.openfaas.scale.max: 10
+      com.openfaas.scale.factor: 50
+      com.openfaas.scale.zero: true
+    annotations:
+     com.openfaas.health.http.path: "/healthz"
+     com.openfaas.health.http.initialDelay: "5s"
+  echofaas:
+    skip_build: true
+    # image built on 2022-06-23 for on-prem release v0.1.2
+    image: gcr.io/edgedelta/function@sha256:6bd3d40a73656585fc44f53ed79ebb9e2b816e663584d6d4069423f7de853a95
+    environment:
+      ED_HANDLER_NAME: echo
+    labels:
+      com.openfaas.scale.min: 1
+      com.openfaas.scale.max: 1
+      com.openfaas.scale.zero: false
+    annotations:
+     com.openfaas.health.http.path: "/healthz"
+     com.openfaas.health.http.initialDelay: "5s"

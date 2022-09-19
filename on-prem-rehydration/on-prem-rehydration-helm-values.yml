@@ -1,0 +1,20 @@
+# ref: https://github.com/openfaas/faas-netes/blob/master/chart/openfaas/values.yaml
+functionNamespace: "edgedelta-rehydration"
+serviceType: "NodePort"
+basic_auth: false
+generateBasicAuth: false
+openfaasPRO: false
+faasnetes:
+  readTimeout: "1h5m"
+  writeTimeout: "1h5m"
+
+gateway:
+  readTimeout: "1h5m"
+  writeTimeout: "1h5m"
+  upstreamTimeout: "1h"  # Must be smaller than read/write_timeout
+
+queueWorkerPro:
+  enabled: false
+
+queueWorker:
+  ackWait: "1h"
