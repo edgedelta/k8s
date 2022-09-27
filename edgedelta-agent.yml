@@ -32,7 +32,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.42
+        image: gcr.io/edgedelta/agent:v0.1.43
         env:
           - name: ED_API_KEY
             valueFrom:
@@ -72,6 +72,8 @@ spec:
             # Update mountPath to match the actual container log folder path
             mountPath: /var/lib/docker/containers
             readOnly: true
+          - name: persisting-cursor-storage
+            mountPath: /var/lib/edgedelta
         # Required for OpenShift or SELinux enabled K8s clusters
         # securityContext:
         #   runAsUser: 0
@@ -87,6 +89,10 @@ spec:
           hostPath:
             # Update path below if you changed volumeMounts varlibdockercontainers mountPath
             path: /var/lib/docker/containers
+        - name: persisting-cursor-storage
+          hostPath:
+            path: /var/lib/edgedelta
+            type: DirectoryOrCreate
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
