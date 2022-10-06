@@ -18,8 +18,8 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: poller
-        # image built on 2022-06-23 for on-prem release v0.1.2
-        image: gcr.io/edgedelta/rehydrationpoller@sha256:0fb2a833b59a10cbf50bbe434a83284b9ba835db9d92ba6cca0e88130683f563
+        # image built on 2022-10-06 for on-prem release v0.1.12
+        image: gcr.io/edgedelta/rehydrationpoller:v0.1.12
         command:
           - /edgedelta/rehydrationpoller
         env:
