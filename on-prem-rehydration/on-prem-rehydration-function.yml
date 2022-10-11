@@ -6,8 +6,8 @@ provider:
 functions:
   rehydrate:
     skip_build: true
-    # image built on 2022-10-10 for on-prem release v0.1.13
-    image: gcr.io/edgedelta/function:v0.1.13
+    # image built on 2022-10-11 for on-prem release v0.1.14
+    image: gcr.io/edgedelta/function:v0.1.14
     limits:
       memory: 16000Mi
     requests:
@@ -36,8 +36,8 @@ functions:
      com.openfaas.health.http.initialDelay: "5s"
   echofaas:
     skip_build: true
-    # image built on 2022-10-10 for on-prem release v0.1.13
-    image: gcr.io/edgedelta/function:v0.1.13
+    # image built on 2022-10-11 for on-prem release v0.1.14
+    image: gcr.io/edgedelta/function:v0.1.14
     environment:
       ED_HANDLER_NAME: echo
     labels:
