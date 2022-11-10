@@ -18,8 +18,8 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: poller
-        # image built on 2022-10-11 for on-prem release v0.1.14
-        image: gcr.io/edgedelta/rehydrationpoller:v0.1.14
+        # image built on 2022-11-10 for on-prem release v0.1.15
+        image: gcr.io/edgedelta/rehydrationpoller:v0.1.15
         command:
           - /edgedelta/rehydrationpoller
         env:
@@ -36,6 +36,8 @@ spec:
               secretKeyRef:
                 key: ed-rehydration-token
                 name: ed-rehydration-token
+          # - name: ED_DISABLE_API_TLS_VERIFICATION
+          #   value: "1"
         resources:
           limits:
             cpu: 200m
