@@ -6,8 +6,8 @@ provider:
 functions:
   rehydrate:
     skip_build: true
-    # image built on 2022-11-17 for on-prem release v0.1.17
-    image: gcr.io/edgedelta/function:v0.1.17
+    # image built on 2022-12-05 for on-prem release v0.1.18
+    image: gcr.io/edgedelta/function:v0.1.18
     limits:
       memory: 16000Mi
     requests:
@@ -17,13 +17,13 @@ functions:
       ED_REHYDRATION_PUSH_BATCH_SIZE: 10000
       ED_HANDLER_NAME: rehydrate
       ED_REMOTE_REPOSITORY: "1"
-      ED_REMOTE_TOKEN_FILE: /var/openfaas/secrets/ed-rehydration-token
+      ED_REMOTE_TOKEN_FILE: /var/openfaas/secrets/ed-api-token
       # ED_DISABLE_API_TLS_VERIFICATION: "1"
       GOGC: 20
       GOMEMLIMIT: 15GiB # This value should be less than memory limit of the pod, ideally 90% of the limit
       GODEBUG: madvdontneed=1
     secrets:
-      - ed-rehydration-token
+      - ed-api-token
     # in order to run rehydration function handler on specific nodes, uncomment below and specify a node label.
     # constraints:
     #  - "eks.amazonaws.com/nodegroup=rehydration-node-group"
@@ -37,8 +37,8 @@ functions:
      com.openfaas.health.http.initialDelay: "5s"
   echofaas:
     skip_build: true
-    # image built on 2022-11-17 for on-prem release v0.1.17
-    image: gcr.io/edgedelta/function:v0.1.17
+    # image built on 2022-12-05 for on-prem release v0.1.18
+    image: gcr.io/edgedelta/function:v0.1.18
     environment:
       ED_HANDLER_NAME: echo
     labels:

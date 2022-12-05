@@ -18,15 +18,17 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: poller
-        # image built on 2022-11-17 for on-prem release v0.1.17
-        image: gcr.io/edgedelta/rehydrationpoller:v0.1.17
+        # image built on 2022-12-05 for on-prem release v0.1.18
+        image: gcr.io/edgedelta/functionpoller:v0.1.18
         command:
-          - /edgedelta/rehydrationpoller
+          - /edgedelta/functionpoller
         env:
           - name: ED_REHYDRATION_POLL_INTERVAL
             value: "10s"
           - name: ED_ORG_ID
             value: "" # put your edge delta org id here
+          - name: ED_AGENT_TAGS_FILTER
+            value: "" # put your comma separated list of agent tags to perform rehydration here
           - name: ED_API_ENDPOINT
             value: https://api.edgedelta.com # default is https://api.edgedelta.com
           - name: ED_REHYDRATE_DIRECT_ENDPOINT
@@ -36,8 +38,8 @@ spec:
           - name: ED_REMOTE_TOKEN
             valueFrom:
               secretKeyRef:
-                key: ed-rehydration-token
-                name: ed-rehydration-token
+                key: ed-api-token
+                name: ed-api-token
           # - name: ED_DISABLE_API_TLS_VERIFICATION
           #   value: "1"
         resources:
