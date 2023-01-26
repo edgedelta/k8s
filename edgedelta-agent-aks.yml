@@ -73,8 +73,6 @@ spec:
             name: varlogpods
             readOnly: true
         imagePullPolicy: Always
-      imagePullSecrets:
-        - name: regcred
       restartPolicy: Always
       terminationGracePeriodSeconds: 10
       volumes:
@@ -154,8 +152,6 @@ spec:
             mountPath: /var/lib/docker/containers
             readOnly: true
         imagePullPolicy: Always
-      imagePullSecrets:
-        - name: regcred
       terminationGracePeriodSeconds: 10
       volumes:
         - name: varlog
