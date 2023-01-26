@@ -18,8 +18,8 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: poller
-        # image built on 2023-01-19 for on-prem release v0.1.31
-        image: gcr.io/edgedelta/functionpoller:v0.1.31
+        # image built on 2023-01-26 for on-prem release v0.1.32
+        image: gcr.io/edgedelta/functionpoller:v0.1.32
         command:
           - /edgedelta/functionpoller
         env:
@@ -35,11 +35,8 @@ spec:
             value: "http://rehydration-handler.edgedelta-rehydration.svc.cluster.local:8080"
           - name: ED_DISABLE_OPENFAAS
             value: "1"
-          - name: ED_REMOTE_TOKEN
-            valueFrom:
-              secretKeyRef:
-                key: ed-api-token
-                name: ed-api-token
+          - name: ED_REMOTE_TOKEN_FILE
+            value: "/etc/ed-api-token/ed-api-token"
           # - name: ED_DISABLE_API_TLS_VERIFICATION
           #   value: "1"
         resources:
@@ -50,3 +47,11 @@ spec:
             cpu: 100m
             memory: 100Mi
         imagePullPolicy: Always
+        volumeMounts:
+        - name: ed-api-token
+          mountPath: "/etc/ed-api-token"
+          readOnly: true
+      volumes:
+      - name: ed-api-token
+        secret:
+          secretName: ed-api-token
