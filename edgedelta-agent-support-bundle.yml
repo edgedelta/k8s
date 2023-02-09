@@ -1,0 +1,30 @@
+apiVersion: troubleshoot.replicated.com/v1beta1
+kind: SupportBundle
+metadata:
+  name: edgedelta-agent-support-bundle
+spec:
+  collectors:
+    - clusterInfo: {}
+    - clusterResources:
+        namespaces:
+          - edgedelta
+    - logs:
+        selector:
+          - k8s-app=edgedelta-logging
+        name: edgedelta-agent
+        namespace: edgedelta
+        limits:
+          maxAge: 720h
+          maxLines: 10000
+  analyzers:
+    - textAnalyze:
+        checkName: edgedelta-agent Error Check
+        fileName: edgedelta-agent/*/*.log
+        regex: 'ERROR'
+        outcomes:
+          - pass:
+              when: "false"
+              message: "No error found in edgedelta-agent logs"
+          - fail:
+              when: "true"
+              message: "Problem with edgedelta-agent"
