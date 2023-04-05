@@ -18,8 +18,8 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: poller
-        # image built on 2023-04-04 for on-prem release v0.1.42
-        image: gcr.io/edgedelta/functionpoller:v0.1.42
+        # image built on 2023-04-05 for on-prem release v0.1.44
+        image: gcr.io/edgedelta/functionpoller:v0.1.44
         command:
           - /edgedelta/functionpoller
         env:
