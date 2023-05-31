@@ -25,7 +25,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.68
+        image: gcr.io/edgedelta/agent:v0.1.69
         command:
           - /edgedelta/edgedelta
         env:
