@@ -18,8 +18,8 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: handler
-        # image built on 2023-06-06 for on-prem release v0.1.58
-        image: gcr.io/edgedelta/function:v0.1.58
+        # image built on 2023-06-07 for on-prem release v0.1.59
+        image: gcr.io/edgedelta/function:v0.1.59
         ports:
           - containerPort: 8080
         command:
@@ -33,6 +33,10 @@ spec:
             value: "rehydrate"
           - name: ED_REMOTE_REPOSITORY
             value: "1"
+          - name: ED_REHYDRATION_SYNC_MODE
+            value: "false"
+          - name: ED_REHYDRATION_PUSH_CONCURRENCY
+            value: "4"
           - name: ED_REMOTE_TOKEN_FILE
             value: "/etc/ed-api-token/ed-api-token"
           # - name: ED_DISABLE_API_TLS_VERIFICATION
