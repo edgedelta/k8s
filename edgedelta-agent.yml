@@ -32,7 +32,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.80
+        image: gcr.io/edgedelta/agent:v0.1.81
         env:
           - name: ED_API_KEY
             valueFrom:
