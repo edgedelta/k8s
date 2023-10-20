@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.83
+        image: gcr.io/edgedelta/agent:v0.1.84
         env:
           - name: ED_API_KEY
             valueFrom:
@@ -111,6 +111,8 @@ rules:
   - pods
   - events
   - nodes
+  - nodes/metrics
+  - services
   verbs:
   - get
   - watch

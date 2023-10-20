@@ -188,6 +188,8 @@ rules:
   - pods
   - events
   - nodes
+  - nodes/metrics
+  - services
   verbs:
   - get
   - watch
