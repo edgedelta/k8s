@@ -34,7 +34,7 @@ spec:
       hostNetwork: true
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.85
+        image: gcr.io/edgedelta/agent:v0.1.86
         env:
           - name: ED_API_KEY
             valueFrom:
