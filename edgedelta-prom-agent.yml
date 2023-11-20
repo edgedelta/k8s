@@ -30,9 +30,11 @@ spec:
         kubernetes.io/cluster-service: "true"
     spec:
       serviceAccountName: edgedelta
+      hostPID: true
+      hostNetwork: true
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.86
+        image: gcr.io/edgedelta/agent:v0.1.87
         ports:
           # port is exposed to be scraped by prometheus.
           - name: metrics
@@ -63,6 +65,14 @@ spec:
                 fieldPath: spec.nodeName
           - name: ED_LEADER_ELECTION_ENABLED
             value: "1"
+          - name: TRACER_SERVER_PORT
+            value: "9595"
+          - name: ED_ENABLE_TRAFFIC_TRACER
+            value: "1"
+          - name: ED_SERVICE_DNS_REQUIRED
+            value: "1"
+          - name: ED_COMPACT_SERVICE_ENDPOINT
+            value: ed-compactor-svc.edgedelta.svc.cluster.local:9199
         command:
           - /edgedelta/edgedelta
         resources:
@@ -80,10 +90,20 @@ spec:
             # Update mountPath to match the actual container log folder path
             mountPath: /var/lib/docker/containers
             readOnly: true
+          - name: persisting-cursor-storage
+            mountPath: /var/lib/edgedelta
+          - name: cgroup
+            mountPath: /sys/fs/cgroup
+          - name: debugfs
+            mountPath: /sys/kernel/debug
+          - name: netns
+            mountPath: /var/run/netns
+          - name: proc
+            mountPath: /proc
+        securityContext:
+          privileged: true
         # Required for OpenShift or SELinux enabled K8s clusters
-        # securityContext:
-        #   runAsUser: 0
-        #   privileged: true
+        # runAsUser: 0
       terminationGracePeriodSeconds: 10
       volumes:
         - name: varlog
@@ -93,6 +113,22 @@ spec:
           hostPath:
             # Update path below if you changed volumeMounts varlibdockercontainers mountPath
             path: /var/lib/docker/containers
+        - name: persisting-cursor-storage
+          hostPath:
+            path: /var/lib/edgedelta
+            type: DirectoryOrCreate
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+        - name: debugfs
+          hostPath:
+            path: /sys/kernel/debug
+        - name: netns
+          hostPath:
+            path: /var/run/netns
+        - name: proc
+          hostPath:
+            path: /proc
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -158,6 +194,14 @@ rules:
   - update
   - patch
   - delete
+- apiGroups: ["metrics.k8s.io"]
+  resources:
+  - pods
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -166,3 +210,94 @@ metadata:
   namespace: edgedelta
   labels:
     k8s-app: edgedelta-logging
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: edgedelta-compactor
+  namespace: edgedelta
+  labels:
+    k8s-app: edgedelta-compactor
+    version: v1
+    kubernetes.io/cluster-service: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: edgedelta-compactor
+  serviceName: ed-compactor-svc
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8s-app: edgedelta-compactor
+        version: v1
+        kubernetes.io/cluster-service: "true"
+    spec:
+      serviceAccountName: edgedelta
+      containers:
+      - name: edgedelta-compactor
+        image: gcr.io/edgedelta/agent:v0.1.87
+        ports:
+          - name: compactor
+            containerPort: 9199
+          # port is exposed to be scraped by prometheus.
+          - name: metrics
+            containerPort: 6062
+            hostPort: 6063
+        env:
+          - name: ED_AGENT_MODE
+            value: compactor
+          - name: ED_COMPACTOR_PORT
+            value: "9199"
+          - name: ED_COMPACTOR_DATA_DIR
+            value: /var/edgedelta-compactor
+          - name: ED_HOST_OVERRIDE
+            valueFrom:
+              fieldRef:
+               fieldPath: metadata.name
+          
+          - name: ED_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ed-api-key
+                key: ed-api-key
+          # port is exposed to be scraped by prometheus.
+          - name:  STORE_PORT
+            value: "6062"
+          - name: ED_TRACE_FILES
+            value: ""
+        resources:
+            limits:
+              cpu: 2000m
+              memory: 2000Mi
+            requests:
+              cpu: 1000m
+              memory: 1000Mi
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: compactor-data
+            mountPath: /var/edgedelta-compactor
+      terminationGracePeriodSeconds: 60
+      volumes:
+  volumeClaimTemplates:
+  - metadata:
+      name: compactor-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 30Gi
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ed-compactor-svc
+  namespace: edgedelta
+spec:
+  selector:
+    k8s-app: edgedelta-compactor
+  ports:
+    - port: 9199
+      name: compactor-port
