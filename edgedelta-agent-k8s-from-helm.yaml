@@ -4,26 +4,17 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: edgedelta
-  namespace: default
+  namespace: edgedelta
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc18
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc18"
-    app.kubernetes.io/managed-by: Helm
 ---
 # Source: edgedelta/templates/service_account.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: edgedelta
-  namespace: default
+  namespace: edgedelta
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc18
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc18"
-    app.kubernetes.io/managed-by: Helm
+    
 rules:
 - apiGroups: [""] # "" indicates the core API group
   resources:
@@ -83,17 +74,13 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: edgedelta
-  namespace: default
+  namespace: edgedelta
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc18
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc18"
-    app.kubernetes.io/managed-by: Helm
+    
 subjects:
 - kind: ServiceAccount
   name: edgedelta
-  namespace: default
+  namespace: edgedelta
 roleRef:
   kind: ClusterRole
   name: edgedelta
@@ -104,14 +91,10 @@ kind: Service
 apiVersion: v1
 metadata:
   name: ed-compactor-svc
-  namespace: default
+  namespace: edgedelta
 spec:
   selector:
-    helm.sh/chart: edgedelta-0.1.95-rc18
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc18"
-    app.kubernetes.io/managed-by: Helm
+    
     edgedelta/agent-type: compactor
   ports:
     - port: 9199
@@ -122,14 +105,10 @@ kind: Service
 apiVersion: v1
 metadata:
   name: ed-rollup-svc
-  namespace: default
+  namespace: edgedelta
 spec:
   selector:
-    helm.sh/chart: edgedelta-0.1.95-rc18
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc18"
-    app.kubernetes.io/managed-by: Helm
+    
     edgedelta/agent-type: rollup
   ports:
     - port: 9200
@@ -140,14 +119,14 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: edgedelta
-  namespace: default
+  namespace: edgedelta
+  annotations:
+    prometheus.io/scrape: "true"
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc18
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc18"
-    app.kubernetes.io/managed-by: Helm
+    
     edgedelta/agent-type: processor
+    version: v1
+    kubernetes.io/cluster-service: "true"
 spec:
   selector:
     matchLabels:
@@ -160,13 +139,11 @@ spec:
   template:
     metadata:
       labels:
-        helm.sh/chart: edgedelta-0.1.95-rc18
-        app.kubernetes.io/name: edgedelta
-        app.kubernetes.io/instance: edgedelta
-        app.kubernetes.io/version: "v0.1.95-rc18"
-        app.kubernetes.io/managed-by: Helm
+        
       
         edgedelta/agent-type: processor
+        version: v1
+        kubernetes.io/cluster-service: "true"
     spec:
       serviceAccountName: edgedelta
       hostPID: true
@@ -175,9 +152,14 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v0.1.95-rc18
+          image: gcr.io/edgedelta/agent:v0.1.95-rc19
           env:
             
+            - name: ED_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ed-api-key
+                  key: ed-api-key
             - name: ED_ENABLE_PARENT_K8S_CONTROLLER_DISCOVERY
               value: "1"
             - name: ED_LEADER_ELECTION_ENABLED
@@ -194,11 +176,11 @@ spec:
             - name: ED_SERVICE_DNS_REQUIRED
               value: "1"
             - name: ED_COMPACT_SERVICE_ENDPOINT
-              value: ed-compactor-svc.default.svc.cluster.local:9199
+              value: ed-compactor-svc.edgedelta.svc.cluster.local:9199
             - name: ED_METRIC_ROLLUP_ENABLED
               value: "1"
             - name: ED_METRIC_ROLLUP_DESTINATION_OVERRIDE
-              value: ed-rollup-svc.default.svc.cluster.local:9200
+              value: ed-rollup-svc.edgedelta.svc.cluster.local:9200
           securityContext:
             privileged: true
           resources:
@@ -215,6 +197,8 @@ spec:
             - name: varlibdockercontainers
               mountPath: /var/lib/docker/containers
               readOnly: true
+            - name: persisting-cursor-storage
+              mountPath: /var/lib/edgedelta
             - name: cgroup
               mountPath: /sys/fs/cgroup
             - name: debugfs
@@ -231,6 +215,10 @@ spec:
         - name: varlibdockercontainers
           hostPath:
             path: /var/lib/docker/containers
+        - name: persisting-cursor-storage
+          hostPath:
+            path: /var/lib/edgedelta
+            type: DirectoryOrCreate
         - name: cgroup
           hostPath:
             path: /sys/fs/cgroup
@@ -249,14 +237,12 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: edgedelta-compactor
-  namespace: default
+  namespace: edgedelta
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc18
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc18"
-    app.kubernetes.io/managed-by: Helm
+    
     edgedelta/agent-type: compactor
+    version: v1
+    kubernetes.io/cluster-service: "true"
 spec:
   replicas: 1
   selector:
@@ -269,18 +255,16 @@ spec:
   template:
     metadata:
       labels:
-        helm.sh/chart: edgedelta-0.1.95-rc18
-        app.kubernetes.io/name: edgedelta
-        app.kubernetes.io/instance: edgedelta
-        app.kubernetes.io/version: "v0.1.95-rc18"
-        app.kubernetes.io/managed-by: Helm
+        
       
         edgedelta/agent-type: compactor
+        version: v1
+        kubernetes.io/cluster-service: "true"
     spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v0.1.95-rc18
+        image: gcr.io/edgedelta/agent:v0.1.95-rc19
         ports:
           - name: compactor
             containerPort: 9199
@@ -296,6 +280,11 @@ spec:
               fieldRef:
                fieldPath: metadata.name
           
+          - name: ED_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ed-api-key
+                key: ed-api-key
           - name: ED_TRACE_FILES
             value: ""
         resources:
@@ -325,13 +314,9 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: edgedelta-rollup
-  namespace: default
+  namespace: edgedelta
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc18
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc18"
-    app.kubernetes.io/managed-by: Helm
+    
     edgedelta/agent-type: rollup
 spec:
   replicas: 2
@@ -345,18 +330,14 @@ spec:
   template:
     metadata:
       labels:
-        helm.sh/chart: edgedelta-0.1.95-rc18
-        app.kubernetes.io/name: edgedelta
-        app.kubernetes.io/instance: edgedelta
-        app.kubernetes.io/version: "v0.1.95-rc18"
-        app.kubernetes.io/managed-by: Helm
+        
       
         edgedelta/agent-type: rollup
     spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v0.1.95-rc18
+        image: gcr.io/edgedelta/agent:v0.1.95-rc19
         ports:
           - name: rollup
             containerPort: 9200
@@ -373,7 +354,7 @@ spec:
           - name: GOMEMLIMIT
             value: 900MiB
           - name: ED_COMPACT_SERVICE_ENDPOINT
-            value: ed-compactor-svc.default.svc.cluster.local:9199
+            value: ed-compactor-svc.edgedelta.svc.cluster.local:9199
         resources:
             limits:
               cpu: 1000m
