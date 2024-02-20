@@ -6,10 +6,10 @@ metadata:
   name: edgedelta
   namespace: default
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc17
+    helm.sh/chart: edgedelta-0.1.95-rc18
     app.kubernetes.io/name: edgedelta
     app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc17"
+    app.kubernetes.io/version: "v0.1.95-rc18"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: edgedelta/templates/service_account.yaml
@@ -19,10 +19,10 @@ metadata:
   name: edgedelta
   namespace: default
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc17
+    helm.sh/chart: edgedelta-0.1.95-rc18
     app.kubernetes.io/name: edgedelta
     app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc17"
+    app.kubernetes.io/version: "v0.1.95-rc18"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups: [""] # "" indicates the core API group
@@ -85,10 +85,10 @@ metadata:
   name: edgedelta
   namespace: default
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc17
+    helm.sh/chart: edgedelta-0.1.95-rc18
     app.kubernetes.io/name: edgedelta
     app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc17"
+    app.kubernetes.io/version: "v0.1.95-rc18"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -107,10 +107,10 @@ metadata:
   namespace: default
 spec:
   selector:
-    helm.sh/chart: edgedelta-0.1.95-rc17
+    helm.sh/chart: edgedelta-0.1.95-rc18
     app.kubernetes.io/name: edgedelta
     app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc17"
+    app.kubernetes.io/version: "v0.1.95-rc18"
     app.kubernetes.io/managed-by: Helm
     edgedelta/agent-type: compactor
   ports:
@@ -125,10 +125,10 @@ metadata:
   namespace: default
 spec:
   selector:
-    helm.sh/chart: edgedelta-0.1.95-rc17
+    helm.sh/chart: edgedelta-0.1.95-rc18
     app.kubernetes.io/name: edgedelta
     app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc17"
+    app.kubernetes.io/version: "v0.1.95-rc18"
     app.kubernetes.io/managed-by: Helm
     edgedelta/agent-type: rollup
   ports:
@@ -142,10 +142,10 @@ metadata:
   name: edgedelta
   namespace: default
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc17
+    helm.sh/chart: edgedelta-0.1.95-rc18
     app.kubernetes.io/name: edgedelta
     app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc17"
+    app.kubernetes.io/version: "v0.1.95-rc18"
     app.kubernetes.io/managed-by: Helm
     edgedelta/agent-type: processor
 spec:
@@ -160,10 +160,10 @@ spec:
   template:
     metadata:
       labels:
-        helm.sh/chart: edgedelta-0.1.95-rc17
+        helm.sh/chart: edgedelta-0.1.95-rc18
         app.kubernetes.io/name: edgedelta
         app.kubernetes.io/instance: edgedelta
-        app.kubernetes.io/version: "v0.1.95-rc17"
+        app.kubernetes.io/version: "v0.1.95-rc18"
         app.kubernetes.io/managed-by: Helm
       
         edgedelta/agent-type: processor
@@ -175,7 +175,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v0.1.95-rc17
+          image: gcr.io/edgedelta/agent:v0.1.95-rc18
           env:
             
             - name: ED_ENABLE_PARENT_K8S_CONTROLLER_DISCOVERY
@@ -251,10 +251,10 @@ metadata:
   name: edgedelta-compactor
   namespace: default
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc17
+    helm.sh/chart: edgedelta-0.1.95-rc18
     app.kubernetes.io/name: edgedelta
     app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc17"
+    app.kubernetes.io/version: "v0.1.95-rc18"
     app.kubernetes.io/managed-by: Helm
     edgedelta/agent-type: compactor
 spec:
@@ -269,10 +269,10 @@ spec:
   template:
     metadata:
       labels:
-        helm.sh/chart: edgedelta-0.1.95-rc17
+        helm.sh/chart: edgedelta-0.1.95-rc18
         app.kubernetes.io/name: edgedelta
         app.kubernetes.io/instance: edgedelta
-        app.kubernetes.io/version: "v0.1.95-rc17"
+        app.kubernetes.io/version: "v0.1.95-rc18"
         app.kubernetes.io/managed-by: Helm
       
         edgedelta/agent-type: compactor
@@ -280,7 +280,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v0.1.95-rc17
+        image: gcr.io/edgedelta/agent:v0.1.95-rc18
         ports:
           - name: compactor
             containerPort: 9199
@@ -327,10 +327,10 @@ metadata:
   name: edgedelta-rollup
   namespace: default
   labels:
-    helm.sh/chart: edgedelta-0.1.95-rc17
+    helm.sh/chart: edgedelta-0.1.95-rc18
     app.kubernetes.io/name: edgedelta
     app.kubernetes.io/instance: edgedelta
-    app.kubernetes.io/version: "v0.1.95-rc17"
+    app.kubernetes.io/version: "v0.1.95-rc18"
     app.kubernetes.io/managed-by: Helm
     edgedelta/agent-type: rollup
 spec:
@@ -345,10 +345,10 @@ spec:
   template:
     metadata:
       labels:
-        helm.sh/chart: edgedelta-0.1.95-rc17
+        helm.sh/chart: edgedelta-0.1.95-rc18
         app.kubernetes.io/name: edgedelta
         app.kubernetes.io/instance: edgedelta
-        app.kubernetes.io/version: "v0.1.95-rc17"
+        app.kubernetes.io/version: "v0.1.95-rc18"
         app.kubernetes.io/managed-by: Helm
       
         edgedelta/agent-type: rollup
@@ -356,7 +356,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v0.1.95-rc17
+        image: gcr.io/edgedelta/agent:v0.1.95-rc18
         ports:
           - name: rollup
             containerPort: 9200
