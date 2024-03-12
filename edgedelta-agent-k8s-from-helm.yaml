@@ -6,6 +6,8 @@ metadata:
   name: edgedelta
   namespace: edgedelta
   labels:
+    app.kubernetes.io/name: edgedelta
+    app.kubernetes.io/instance: edgedelta
 ---
 # Source: edgedelta/templates/service_account.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -14,7 +16,8 @@ metadata:
   name: edgedelta
   namespace: edgedelta
   labels:
-    
+    app.kubernetes.io/name: edgedelta
+    app.kubernetes.io/instance: edgedelta
 rules:
 - apiGroups: [""] # "" indicates the core API group
   resources:
@@ -76,7 +79,8 @@ metadata:
   name: edgedelta
   namespace: edgedelta
   labels:
-    
+    app.kubernetes.io/name: edgedelta
+    app.kubernetes.io/instance: edgedelta
 subjects:
 - kind: ServiceAccount
   name: edgedelta
@@ -94,7 +98,8 @@ metadata:
   namespace: edgedelta
 spec:
   selector:
-    
+    app.kubernetes.io/name: edgedelta
+    app.kubernetes.io/instance: edgedelta
     edgedelta/agent-type: compactor
   ports:
     - port: 9199
@@ -108,7 +113,8 @@ metadata:
   namespace: edgedelta
 spec:
   selector:
-    
+    app.kubernetes.io/name: edgedelta
+    app.kubernetes.io/instance: edgedelta
     edgedelta/agent-type: rollup
   ports:
     - port: 9200
@@ -123,7 +129,8 @@ metadata:
   annotations:
     prometheus.io/scrape: "true"
   labels:
-    
+    app.kubernetes.io/name: edgedelta
+    app.kubernetes.io/instance: edgedelta
     edgedelta/agent-type: processor
     version: v1
     kubernetes.io/cluster-service: "true"
@@ -139,7 +146,8 @@ spec:
   template:
     metadata:
       labels:
-        
+        app.kubernetes.io/name: edgedelta
+        app.kubernetes.io/instance: edgedelta
       
         edgedelta/agent-type: processor
         version: v1
@@ -152,7 +160,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v0.1.97-rc4
+          image: gcr.io/edgedelta/agent:v0.1.97-rc5
           env:
             
             - name: ED_API_KEY
@@ -239,7 +247,8 @@ metadata:
   name: edgedelta-compactor
   namespace: edgedelta
   labels:
-    
+    app.kubernetes.io/name: edgedelta
+    app.kubernetes.io/instance: edgedelta
     edgedelta/agent-type: compactor
     version: v1
     kubernetes.io/cluster-service: "true"
@@ -255,7 +264,8 @@ spec:
   template:
     metadata:
       labels:
-        
+        app.kubernetes.io/name: edgedelta
+        app.kubernetes.io/instance: edgedelta
       
         edgedelta/agent-type: compactor
         version: v1
@@ -264,7 +274,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v0.1.97-rc4
+        image: gcr.io/edgedelta/agent:v0.1.97-rc5
         ports:
           - name: compactor
             containerPort: 9199
@@ -316,7 +326,8 @@ metadata:
   name: edgedelta-rollup
   namespace: edgedelta
   labels:
-    
+    app.kubernetes.io/name: edgedelta
+    app.kubernetes.io/instance: edgedelta
     edgedelta/agent-type: rollup
 spec:
   replicas: 2
@@ -330,14 +341,15 @@ spec:
   template:
     metadata:
       labels:
-        
+        app.kubernetes.io/name: edgedelta
+        app.kubernetes.io/instance: edgedelta
       
         edgedelta/agent-type: rollup
     spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v0.1.97-rc4
+        image: gcr.io/edgedelta/agent:v0.1.97-rc5
         ports:
           - name: rollup
             containerPort: 9200
