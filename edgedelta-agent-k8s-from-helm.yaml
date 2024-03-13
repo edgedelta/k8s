@@ -160,7 +160,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v0.1.97-rc5
+          image: gcr.io/edgedelta/agent:v0.1.97-rc6
           env:
             
             - name: ED_API_KEY
@@ -274,7 +274,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v0.1.97-rc5
+        image: gcr.io/edgedelta/agent:v0.1.97-rc6
         ports:
           - name: compactor
             containerPort: 9199
@@ -349,7 +349,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v0.1.97-rc5
+        image: gcr.io/edgedelta/agent:v0.1.97-rc6
         ports:
           - name: rollup
             containerPort: 9200
