@@ -160,7 +160,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v0.1.97-rc11
+          image: gcr.io/edgedelta/agent:v0.1.97-rc12
           
           env:
             
@@ -275,7 +275,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v0.1.97-rc11
+        image: gcr.io/edgedelta/agent:v0.1.97-rc12
         ports:
           - name: compactor
             containerPort: 9199
@@ -350,7 +350,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v0.1.97-rc11
+        image: gcr.io/edgedelta/agent:v0.1.97-rc12
         ports:
           - name: rollup
             containerPort: 9200
@@ -362,6 +362,11 @@ spec:
               fieldRef:
                fieldPath: metadata.name
           
+          - name: ED_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ed-api-key
+                key: ed-api-key
           - name: ED_TRACE_FILES
             value: ""
           - name: GOMEMLIMIT
