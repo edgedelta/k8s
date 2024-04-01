@@ -160,7 +160,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v0.1.99-rc.2
+          image: gcr.io/edgedelta/agent:v0.1.99-rc.3
           
           env:
             
@@ -255,7 +255,7 @@ metadata:
     kubernetes.io/cluster-service: "true"
 spec:
   replicas: 1
-  podManagementPolicy: Parallel
+  podManagementPolicy: OrderedReady
   selector:
     matchLabels:
       app.kubernetes.io/name: edgedelta
@@ -276,7 +276,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v0.1.99-rc.2
+        image: gcr.io/edgedelta/agent:v0.1.99-rc.3
         ports:
           - name: compactor
             containerPort: 9199
@@ -338,7 +338,7 @@ spec:
       app.kubernetes.io/name: edgedelta
       app.kubernetes.io/instance: edgedelta
   serviceName: ed-rollup-svc
-  podManagementPolicy: Parallel
+  podManagementPolicy: OrderedReady
   updateStrategy:
     type: RollingUpdate
   template:
@@ -352,7 +352,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v0.1.99-rc.2
+        image: gcr.io/edgedelta/agent:v0.1.99-rc.3
         ports:
           - name: rollup
             containerPort: 9200
