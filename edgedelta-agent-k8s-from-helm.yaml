@@ -160,7 +160,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v0.1.100-rc.4
+          image: gcr.io/edgedelta/agent:v0.1.100-rc.5
           
           env:
             
@@ -194,6 +194,7 @@ spec:
             privileged: true
           resources:
             limits:
+              cpu: 2000m
               memory: 2048Mi
             requests:
               cpu: 200m
@@ -276,7 +277,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v0.1.100-rc.4
+        image: gcr.io/edgedelta/agent:v0.1.100-rc.5
         ports:
           - name: compactor
             containerPort: 9199
@@ -352,7 +353,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v0.1.100-rc.4
+        image: gcr.io/edgedelta/agent:v0.1.100-rc.5
         ports:
           - name: rollup
             containerPort: 9200
