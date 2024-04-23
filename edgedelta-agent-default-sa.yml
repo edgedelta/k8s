@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.99
+        image: gcr.io/edgedelta/agent:v0.1.100
         env:
           - name: ED_API_KEY
             valueFrom:
@@ -58,6 +58,7 @@ spec:
           - /edgedelta/edgedelta
         resources:
           limits:
+            cpu: 2000m
             memory: 2048Mi
           requests:
             cpu: 200m

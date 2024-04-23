@@ -25,7 +25,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.99
+        image: gcr.io/edgedelta/agent:v0.1.100
         command:
           - /edgedelta/edgedelta
         env:
@@ -43,6 +43,7 @@ spec:
                 fieldPath: spec.nodeName
         resources:
           limits:
+            cpu: 2000m
             memory: 2048Mi
           requests:
             cpu: 200m
