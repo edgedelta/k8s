@@ -160,7 +160,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v0.1.101-rc.1
+          image: gcr.io/edgedelta/agent:v0.1.101
           
           env:
             
@@ -277,7 +277,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v0.1.101-rc.1
+        image: gcr.io/edgedelta/agent:v0.1.101
         ports:
           - name: compactor
             containerPort: 9199
@@ -286,8 +286,6 @@ spec:
             value: compactor
           - name: ED_COMPACTOR_PORT
             value: "9199"
-          - name: ED_COMPACTOR_DATA_DIR
-            value: /var/edgedelta-compactor
           - name: ED_HOST_OVERRIDE
             valueFrom:
               fieldRef:
@@ -309,18 +307,8 @@ spec:
               memory: 300Mi
         imagePullPolicy: Always
         volumeMounts:
-          - name: compactor-data
-            mountPath: /var/edgedelta-compactor
       terminationGracePeriodSeconds: 60
-      volumes:      
-  volumeClaimTemplates:
-  - metadata:
-      name: compactor-data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 30Gi
+      volumes:
 ---
 # Source: edgedelta/templates/rollup.yaml
 apiVersion: apps/v1
@@ -353,7 +341,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v0.1.101-rc.1
+        image: gcr.io/edgedelta/agent:v0.1.101
         ports:
           - name: rollup
             containerPort: 9200
