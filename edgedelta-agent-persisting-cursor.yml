@@ -34,7 +34,7 @@ spec:
       hostNetwork: true
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v0.1.102
+        image: gcr.io/edgedelta/agent:v0.1.103
         env:
           - name: ED_API_KEY
             valueFrom:
@@ -231,7 +231,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v0.1.102
+        image: gcr.io/edgedelta/agent:v0.1.103
         ports:
           - name: compactor
             containerPort: 9199
