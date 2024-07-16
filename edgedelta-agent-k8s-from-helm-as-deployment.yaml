@@ -159,7 +159,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v1.10.0
+          image: gcr.io/edgedelta/agent:v1.11.0
           
           env:
             
@@ -169,8 +169,6 @@ spec:
                   name: ed-api-key
                   key: ed-api-key
             - name: ED_ENABLE_PARENT_K8S_CONTROLLER_DISCOVERY
-              value: "1"
-            - name:  ED_LEADER_ELECTION_ENABLED
               value: "1"
             # pass pod name to agent
             - name: ED_HOST_OVERRIDE
@@ -229,7 +227,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v1.10.0
+        image: gcr.io/edgedelta/agent:v1.11.0
         ports:
           - name: rollup
             containerPort: 9200
@@ -296,7 +294,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v1.10.0
+        image: gcr.io/edgedelta/agent:v1.11.0
         ports:
           - name: compactor
             containerPort: 9199
