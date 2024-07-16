@@ -32,7 +32,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v1.10.0
+        image: gcr.io/edgedelta/agent:v1.11.0
         env:
           - name: ED_BACKEND_DISABLED
             value: "1"
@@ -47,8 +47,6 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
-          - name: ED_LEADER_ELECTION_ENABLED
-            value: "1"
         command:
           - /edgedelta/edgedelta
           - -c

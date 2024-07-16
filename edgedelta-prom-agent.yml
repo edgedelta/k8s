@@ -34,7 +34,7 @@ spec:
       hostNetwork: true
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v1.10.0
+        image: gcr.io/edgedelta/agent:v1.11.0
         ports:
           # port is exposed to be scraped by prometheus.
           - name: metrics
@@ -63,8 +63,6 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
-          - name: ED_LEADER_ELECTION_ENABLED
-            value: "1"
           - name: TRACER_SERVER_PORT
             value: "9595"
           - name: ED_ENABLE_TRAFFIC_TRACER
@@ -239,7 +237,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v1.10.0
+        image: gcr.io/edgedelta/agent:v1.11.0
         ports:
           - name: compactor
             containerPort: 9199
