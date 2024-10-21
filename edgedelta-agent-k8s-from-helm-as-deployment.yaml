@@ -160,7 +160,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v1.20.0
+          image: gcr.io/edgedelta/agent:v1.21.0
           
           env:
             
@@ -191,7 +191,7 @@ spec:
             requests:
               cpu: 200m
               memory: 256Mi
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           volumeMounts:
       terminationGracePeriodSeconds: 10
       volumes:
@@ -228,7 +228,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v1.20.0
+        image: gcr.io/edgedelta/agent:v1.21.0
         ports:
           - name: rollup
             containerPort: 9200
@@ -258,7 +258,7 @@ spec:
             requests:
               cpu: 200m
               memory: 256Mi
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
       terminationGracePeriodSeconds: 60
 ---
 # Source: edgedelta/templates/compactor.yaml
@@ -295,7 +295,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v1.20.0
+        image: gcr.io/edgedelta/agent:v1.21.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -323,7 +323,7 @@ spec:
             requests:
               cpu: 200m
               memory: 300Mi
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         volumeMounts:
       terminationGracePeriodSeconds: 60
       volumes:
