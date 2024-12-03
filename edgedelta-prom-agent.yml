@@ -34,7 +34,7 @@ spec:
       hostNetwork: true
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v1.23.0
+        image: gcr.io/edgedelta/agent:v1.24.0
         ports:
           # port is exposed to be scraped by prometheus.
           - name: metrics
@@ -237,7 +237,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v1.23.0
+        image: gcr.io/edgedelta/agent:v1.24.0
         ports:
           - name: compactor
             containerPort: 9199

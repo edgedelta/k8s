@@ -32,7 +32,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v1.23.0
+        image: gcr.io/edgedelta/agent:v1.24.0
         env:
           - name: ED_BACKEND_DISABLED
             value: "1"
