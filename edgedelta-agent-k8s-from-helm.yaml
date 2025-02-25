@@ -72,6 +72,7 @@ rules:
   verbs:
   - watch
   - list
+# This is needed since OpenShift uses different KSM package which requires authentication
 ---
 # Source: edgedelta/templates/service_account.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -166,7 +167,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v1.29.0
+          image: gcr.io/edgedelta/agent:v1.30.0
           
           env:
             
@@ -280,7 +281,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v1.29.0
+        image: gcr.io/edgedelta/agent:v1.30.0
         ports:
           - name: rollup
             containerPort: 9200
@@ -347,7 +348,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v1.29.0
+        image: gcr.io/edgedelta/agent:v1.30.0
         ports:
           - name: compactor
             containerPort: 9199
