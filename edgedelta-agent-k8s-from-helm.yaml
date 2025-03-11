@@ -167,7 +167,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v1.30.0
+          image: gcr.io/edgedelta/agent:v1.31.0
           
           env:
             
@@ -178,8 +178,6 @@ spec:
                   key: ed-api-key
             - name: ED_ENABLE_PARENT_K8S_CONTROLLER_DISCOVERY
               value: "1"
-            - name: GOMEMLIMIT
-              value: 1800MiB
             # pass node hostname to agent
             - name: ED_HOST_OVERRIDE
               valueFrom:
@@ -281,7 +279,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v1.30.0
+        image: gcr.io/edgedelta/agent:v1.31.0
         ports:
           - name: rollup
             containerPort: 9200
@@ -300,8 +298,6 @@ spec:
                 key: ed-api-key
           - name: ED_TRACE_FILES
             value: ""
-          - name: GOMEMLIMIT
-            value: 900MiB
           - name: ED_COMPACT_SERVICE_ENDPOINT
             value: ed-compactor-svc.edgedelta.svc.cluster.local:9199
         resources:
@@ -348,7 +344,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v1.30.0
+        image: gcr.io/edgedelta/agent:v1.31.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -369,8 +365,6 @@ spec:
                 key: ed-api-key
           - name: ED_TRACE_FILES
             value: ""
-          - name: GOMEMLIMIT
-            value: 1800MiB
         resources:
             limits:
               cpu: 2000m
