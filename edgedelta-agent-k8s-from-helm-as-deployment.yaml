@@ -161,7 +161,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v1.31.0
+          image: gcr.io/edgedelta/agent:v1.33.0
           
           env:
             
@@ -172,10 +172,20 @@ spec:
                   key: ed-api-key
             - name: ED_ENABLE_PARENT_K8S_CONTROLLER_DISCOVERY
               value: "1"
-            # pass pod name to agent
-            - name: ED_HOST_OVERRIDE
+            - name: ED_K8S_NODE_NAME
               valueFrom:
                 fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+            - name: ED_K8S_NAMESPACE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: ED_K8S_POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
                   fieldPath: metadata.name
             - name: ED_SERVICE_DNS_REQUIRED
               value: "1"
@@ -229,17 +239,28 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v1.31.0
+        image: gcr.io/edgedelta/agent:v1.33.0
         ports:
           - name: rollup
             containerPort: 9200
         env:
           - name: ED_METRIC_ROLLUP_SERVER_PORT
             value: "9200"
-          - name: ED_HOST_OVERRIDE
+          - name: ED_K8S_NODE_NAME
             valueFrom:
               fieldRef:
-               fieldPath: metadata.name
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          - name: ED_K8S_NAMESPACE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: ED_K8S_POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
           
           - name: ED_API_KEY
             valueFrom:
@@ -294,7 +315,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v1.31.0
+        image: gcr.io/edgedelta/agent:v1.33.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -303,10 +324,21 @@ spec:
             value: compactor
           - name: ED_COMPACTOR_PORT
             value: "9199"
-          - name: ED_HOST_OVERRIDE
+          - name: ED_K8S_NODE_NAME
             valueFrom:
               fieldRef:
-               fieldPath: metadata.name
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          - name: ED_K8S_NAMESPACE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: ED_K8S_POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
           
           - name: ED_API_KEY
             valueFrom:
