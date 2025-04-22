@@ -1,23 +1,23 @@
 ---
-# Source: edgedelta/templates/service_account.yaml
+# Source: edgedelta-coordinator/templates/service_account.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: edgedelta
+  name: edgedelta-coordinator
   namespace: edgedelta
   labels:
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
+    app.kubernetes.io/name: edgedelta-coordinator
+    app.kubernetes.io/instance: edgedelta-coordinator
 ---
-# Source: edgedelta/templates/service_account.yaml
+# Source: edgedelta-coordinator/templates/service_account.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: edgedelta
+  name: edgedelta-coordinator
   namespace: edgedelta
   labels:
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
+    app.kubernetes.io/name: edgedelta-coordinator
+    app.kubernetes.io/instance: edgedelta-coordinator
 rules:
 - apiGroups: [""] # "" indicates the core API group
   resources:
@@ -28,7 +28,6 @@ rules:
   - nodes
   - nodes/metrics
   - services
-  - endpoints
   verbs:
   - get
   - watch
@@ -75,25 +74,25 @@ rules:
   - list
 # This is needed since OpenShift uses different KSM package which requires authentication
 ---
-# Source: edgedelta/templates/service_account.yaml
+# Source: edgedelta-coordinator/templates/service_account.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: edgedelta
+  name: edgedelta-coordinator
   namespace: edgedelta
   labels:
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
+    app.kubernetes.io/name: edgedelta-coordinator
+    app.kubernetes.io/instance: edgedelta-coordinator
 subjects:
 - kind: ServiceAccount
-  name: edgedelta
+  name: edgedelta-coordinator
   namespace: edgedelta
 roleRef:
   kind: ClusterRole
-  name: edgedelta
+  name: edgedelta-coordinator
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: edgedelta/templates/compactor.yaml
+# Source: edgedelta-coordinator/templates/compactor.yaml
 kind: Service
 apiVersion: v1
 metadata:
@@ -104,14 +103,14 @@ metadata:
     kubernetes.io/cluster-service: "true"
 spec:
   selector:
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
+    app.kubernetes.io/name: edgedelta-coordinator
+    app.kubernetes.io/instance: edgedelta-coordinator
     edgedelta/agent-type: compactor
   ports:
     - port: 9199
       name: compactor-port
 ---
-# Source: edgedelta/templates/rollup.yaml
+# Source: edgedelta-coordinator/templates/rollup.yaml
 kind: Service
 apiVersion: v1
 metadata:
@@ -122,59 +121,79 @@ metadata:
     kubernetes.io/cluster-service: "true"
 spec:
   selector:
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
+    app.kubernetes.io/name: edgedelta-coordinator
+    app.kubernetes.io/instance: edgedelta-coordinator
     edgedelta/agent-type: rollup
   ports:
     - port: 9200
       name: rollup-port
 ---
-# Source: edgedelta/templates/daemonset.yaml
-apiVersion: apps/v1
-kind: DaemonSet
+# Source: edgedelta-coordinator/templates/service.yaml
+kind: Service
+apiVersion: v1
 metadata:
-  name: edgedelta
+  name: ed-coordinator-svc
   namespace: edgedelta
-  annotations:
-    prometheus.io/scrape: "true"
   labels:
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
-    edgedelta/agent-type: processor
+    version: v1
+    kubernetes.io/cluster-service: "true"
 spec:
   selector:
+    app.kubernetes.io/name: edgedelta-coordinator
+    app.kubernetes.io/instance: edgedelta-coordinator
+    edgedelta/agent-type: processor
+  ports:
+    - port: 5555
+      name: coordinator-port
+---
+# Source: edgedelta-coordinator/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edgedelta-coordinator
+  namespace: edgedelta
+  labels:
+    app.kubernetes.io/name: edgedelta-coordinator
+    app.kubernetes.io/instance: edgedelta-coordinator
+    edgedelta/agent-type: processor
+spec:
+  replicas: 1
+  selector:
     matchLabels:
-      app.kubernetes.io/name: edgedelta
-      app.kubernetes.io/instance: edgedelta
+      app.kubernetes.io/name: edgedelta-coordinator
+      app.kubernetes.io/instance: edgedelta-coordinator
       edgedelta/agent-type: processor
-  updateStrategy:
+  strategy:
     rollingUpdate:
       maxUnavailable: 1
     type: RollingUpdate
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: edgedelta
-        app.kubernetes.io/instance: edgedelta
+        app.kubernetes.io/name: edgedelta-coordinator
+        app.kubernetes.io/instance: edgedelta-coordinator
       
         edgedelta/agent-type: processor
-        version: v1
-        kubernetes.io/cluster-service: "true"
     spec:
-      serviceAccountName: edgedelta
-      hostPID: true
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
+      serviceAccountName: edgedelta-coordinator
       containers:
         # agent container
-        - name: edgedelta-agent
+        - name: edgedelta-coordinator-agent
           image: gcr.io/edgedelta/agent:v1.35.0
-          
+          ports:
+            - name: coordinator
+              containerPort: 5555
           env:
             - name: ED_FLEET_TYPE
-              value: edge
+              value: coordinator
+            - name: ED_COORDINATOR_SERVER_ENABLED
+              value: "1"
+            - name: ED_COORDINATOR_SERVER_PORT
+              value: "5555"
+            - name: ED_COORDINATOR_USE_BACKEND
+              value: "1"
             
-            - name: ED_API_KEY
+            - name:  ED_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: ed-api-key
@@ -196,20 +215,12 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.name
-            - name: TRACER_SERVER_PORT
-              value: "9595"
-            - name: ED_ENABLE_TRAFFIC_TRACER
-              value: "1"
-            - name: ED_SERVICE_DNS_REQUIRED
-              value: "1"
             - name: ED_COMPACT_SERVICE_ENDPOINT
               value: ed-compactor-svc.edgedelta.svc.cluster.local:9199
             - name: ED_METRIC_ROLLUP_ENABLED
               value: "1"
             - name: ED_METRIC_ROLLUP_DESTINATION_OVERRIDE
               value: ed-rollup-svc.edgedelta.svc.cluster.local:9200
-          securityContext:
-            privileged: true
           resources:
             limits:
               cpu: 2000m
@@ -219,63 +230,25 @@ spec:
               memory: 256Mi
           imagePullPolicy: IfNotPresent
           volumeMounts:
-            - name: varlog
-              mountPath: /var/log
-              readOnly: true
-            - name: varlibdockercontainers
-              mountPath: /var/lib/docker/containers
-              readOnly: true
-            - name: persisting-cursor-storage
-              mountPath: /var/lib/edgedelta
-            - name: cgroup
-              mountPath: /sys/fs/cgroup
-            - name: debugfs
-              mountPath: /sys/kernel/debug
-            - name: netns
-              mountPath: /var/run/netns
-            - name: proc
-              mountPath: /proc
       terminationGracePeriodSeconds: 10
       volumes:
-        - name: varlog
-          hostPath:
-            path: /var/log
-        - name: varlibdockercontainers
-          hostPath:
-            path: /var/lib/docker/containers
-        - name: persisting-cursor-storage
-          hostPath:
-            path: /var/lib/edgedelta
-            type: DirectoryOrCreate
-        - name: cgroup
-          hostPath:
-            path: /sys/fs/cgroup
-        - name: debugfs
-          hostPath:
-            path: /sys/kernel/debug
-        - name: netns
-          hostPath:
-            path: /var/run/netns
-        - name: proc
-          hostPath:
-            path: /proc
 ---
-# Source: edgedelta/templates/rollup.yaml
+# Source: edgedelta-coordinator/templates/rollup.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: edgedelta-rollup
+  name: edgedelta-coordinator-rollup
   namespace: edgedelta
   labels:
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
+    app.kubernetes.io/name: edgedelta-coordinator
+    app.kubernetes.io/instance: edgedelta-coordinator
     edgedelta/agent-type: rollup
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: edgedelta
-      app.kubernetes.io/instance: edgedelta
+      app.kubernetes.io/name: edgedelta-coordinator
+      app.kubernetes.io/instance: edgedelta-coordinator
       edgedelta/agent-type: rollup
   strategy:
     rollingUpdate:
@@ -284,21 +257,21 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: edgedelta
-        app.kubernetes.io/instance: edgedelta
+        app.kubernetes.io/name: edgedelta-coordinator
+        app.kubernetes.io/instance: edgedelta-coordinator
       
         edgedelta/agent-type: rollup
     spec:
-      serviceAccountName: edgedelta
+      serviceAccountName: edgedelta-coordinator
       containers:
-      - name: edgedelta-rollup
+      - name: edgedelta-coordinator-rollup
         image: gcr.io/edgedelta/agent:v1.35.0
         ports:
           - name: rollup
             containerPort: 9200
         env:
           - name: ED_FLEET_TYPE
-            value: edge
+            value: coordinator
           - name: ED_METRIC_ROLLUP_SERVER_PORT
             value: "9200"
           - name: ED_K8S_NODE_NAME
@@ -316,6 +289,10 @@ spec:
               fieldRef:
                 apiVersion: v1
                 fieldPath: metadata.name
+          - name: ED_COORDINATOR_CLIENT_ENABLED
+            value: "1"
+          - name: ED_COORDINATOR_CLIENT_ENDPOINT
+            value: "ed-coordinator-svc.edgedelta.svc.cluster.local:5555"
           
           - name: ED_API_KEY
             valueFrom:
@@ -336,23 +313,23 @@ spec:
         imagePullPolicy: IfNotPresent
       terminationGracePeriodSeconds: 60
 ---
-# Source: edgedelta/templates/compactor.yaml
+# Source: edgedelta-coordinator/templates/compactor.yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: edgedelta-compactor
+  name: edgedelta-coordinator-compactor
   namespace: edgedelta
   labels:
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
+    app.kubernetes.io/name: edgedelta-coordinator
+    app.kubernetes.io/instance: edgedelta-coordinator
     edgedelta/agent-type: compactor
 spec:
   replicas: 1
   podManagementPolicy: OrderedReady
   selector:
     matchLabels:
-      app.kubernetes.io/name: edgedelta
-      app.kubernetes.io/instance: edgedelta
+      app.kubernetes.io/name: edgedelta-coordinator
+      app.kubernetes.io/instance: edgedelta-coordinator
       edgedelta/agent-type: compactor
   serviceName: ed-compactor-svc
   updateStrategy:
@@ -360,23 +337,23 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: edgedelta
-        app.kubernetes.io/instance: edgedelta
+        app.kubernetes.io/name: edgedelta-coordinator
+        app.kubernetes.io/instance: edgedelta-coordinator
       
         edgedelta/agent-type: compactor
         version: v1
         kubernetes.io/cluster-service: "true"
     spec:
-      serviceAccountName: edgedelta
+      serviceAccountName: edgedelta-coordinator
       containers:
-      - name: edgedelta-compactor
+      - name: edgedelta-coordinator-compactor
         image: gcr.io/edgedelta/agent:v1.35.0
         ports:
           - name: compactor
             containerPort: 9199
         env:
           - name: ED_FLEET_TYPE
-            value: edge
+            value: coordinator
           - name: ED_AGENT_MODE
             value: compactor
           - name: ED_COMPACTOR_PORT
@@ -396,6 +373,10 @@ spec:
               fieldRef:
                 apiVersion: v1
                 fieldPath: metadata.name
+          - name: ED_COORDINATOR_CLIENT_ENABLED
+            value: "1"
+          - name: ED_COORDINATOR_CLIENT_ENDPOINT
+            value: "ed-coordinator-svc.edgedelta.svc.cluster.local:5555"
           
           - name: ED_API_KEY
             valueFrom:
