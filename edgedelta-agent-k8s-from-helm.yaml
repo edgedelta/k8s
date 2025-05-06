@@ -97,7 +97,7 @@ roleRef:
 kind: Service
 apiVersion: v1
 metadata:
-  name: ed-compactor-svc
+  name: edgedelta-compactor-svc
   namespace: edgedelta
   labels:
     version: v1
@@ -115,7 +115,7 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: ed-rollup-svc
+  name: edgedelta-rollup-svc
   namespace: edgedelta
   labels:
     version: v1
@@ -168,7 +168,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v1.35.0
+          image: gcr.io/edgedelta/agent:v1.36.0
           
           env:
             - name: ED_FLEET_TYPE
@@ -203,11 +203,11 @@ spec:
             - name: ED_SERVICE_DNS_REQUIRED
               value: "1"
             - name: ED_COMPACT_SERVICE_ENDPOINT
-              value: ed-compactor-svc.edgedelta.svc.cluster.local:9199
+              value: edgedelta-compactor-svc.edgedelta.svc.cluster.local:9199
             - name: ED_METRIC_ROLLUP_ENABLED
               value: "1"
             - name: ED_METRIC_ROLLUP_DESTINATION_OVERRIDE
-              value: ed-rollup-svc.edgedelta.svc.cluster.local:9200
+              value: edgedelta-rollup-svc.edgedelta.svc.cluster.local:9200
           securityContext:
             privileged: true
           resources:
@@ -260,85 +260,9 @@ spec:
           hostPath:
             path: /proc
 ---
-# Source: edgedelta/templates/rollup.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: edgedelta-rollup
-  namespace: edgedelta
-  labels:
-    app.kubernetes.io/name: edgedelta
-    app.kubernetes.io/instance: edgedelta
-    edgedelta/agent-type: rollup
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: edgedelta
-      app.kubernetes.io/instance: edgedelta
-      edgedelta/agent-type: rollup
-  strategy:
-    rollingUpdate:
-      maxUnavailable: 1
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: edgedelta
-        app.kubernetes.io/instance: edgedelta
-      
-        edgedelta/agent-type: rollup
-    spec:
-      serviceAccountName: edgedelta
-      containers:
-      - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v1.35.0
-        ports:
-          - name: rollup
-            containerPort: 9200
-        env:
-          - name: ED_FLEET_TYPE
-            value: edge
-          - name: ED_METRIC_ROLLUP_SERVER_PORT
-            value: "9200"
-          - name: ED_K8S_NODE_NAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: spec.nodeName
-          - name: ED_K8S_NAMESPACE_NAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.namespace
-          - name: ED_K8S_POD_NAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.name
-          
-          - name: ED_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: ed-api-key
-                key: ed-api-key
-          - name: ED_TRACE_FILES
-            value: ""
-          - name: ED_COMPACT_SERVICE_ENDPOINT
-            value: ed-compactor-svc.edgedelta.svc.cluster.local:9199
-        resources:
-            limits:
-              cpu: 1000m
-              memory: 1Gi
-            requests:
-              cpu: 200m
-              memory: 256Mi
-        imagePullPolicy: IfNotPresent
-      terminationGracePeriodSeconds: 60
----
 # Source: edgedelta/templates/compactor.yaml
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: edgedelta-compactor
   namespace: edgedelta
@@ -348,14 +272,12 @@ metadata:
     edgedelta/agent-type: compactor
 spec:
   replicas: 1
-  podManagementPolicy: OrderedReady
   selector:
     matchLabels:
       app.kubernetes.io/name: edgedelta
       app.kubernetes.io/instance: edgedelta
       edgedelta/agent-type: compactor
-  serviceName: ed-compactor-svc
-  updateStrategy:
+  strategy:
     type: RollingUpdate
   template:
     metadata:
@@ -370,7 +292,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v1.35.0
+        image: gcr.io/edgedelta/agent:v1.36.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -415,3 +337,79 @@ spec:
         volumeMounts:
       terminationGracePeriodSeconds: 60
       volumes:
+---
+# Source: edgedelta/templates/rollup.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edgedelta-rollup
+  namespace: edgedelta
+  labels:
+    app.kubernetes.io/name: edgedelta
+    app.kubernetes.io/instance: edgedelta
+    edgedelta/agent-type: rollup
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: edgedelta
+      app.kubernetes.io/instance: edgedelta
+      edgedelta/agent-type: rollup
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: edgedelta
+        app.kubernetes.io/instance: edgedelta
+      
+        edgedelta/agent-type: rollup
+    spec:
+      serviceAccountName: edgedelta
+      containers:
+      - name: edgedelta-rollup
+        image: gcr.io/edgedelta/agent:v1.36.0
+        ports:
+          - name: rollup
+            containerPort: 9200
+        env:
+          - name: ED_FLEET_TYPE
+            value: edge
+          - name: ED_METRIC_ROLLUP_SERVER_PORT
+            value: "9200"
+          - name: ED_K8S_NODE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          - name: ED_K8S_NAMESPACE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: ED_K8S_POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          
+          - name: ED_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ed-api-key
+                key: ed-api-key
+          - name: ED_TRACE_FILES
+            value: ""
+          - name: ED_COMPACT_SERVICE_ENDPOINT
+            value: edgedelta-compactor-svc.edgedelta.svc.cluster.local:9199
+        resources:
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+        imagePullPolicy: IfNotPresent
+      terminationGracePeriodSeconds: 60
