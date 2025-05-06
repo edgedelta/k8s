@@ -34,7 +34,7 @@ spec:
       hostNetwork: true
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v1.35.0
+        image: gcr.io/edgedelta/agent:v1.36.0
         env:
           - name: ED_API_KEY
             valueFrom:
@@ -229,7 +229,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v1.35.0
+        image: gcr.io/edgedelta/agent:v1.36.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -244,7 +244,21 @@ spec:
             valueFrom:
               fieldRef:
                fieldPath: metadata.name
-          
+          - name: ED_K8S_NODE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          - name: ED_K8S_NAMESPACE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: ED_K8S_POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
           - name: ED_API_KEY
             valueFrom:
               secretKeyRef:
