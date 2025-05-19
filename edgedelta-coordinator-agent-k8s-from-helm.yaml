@@ -92,42 +92,6 @@ roleRef:
   name: edgedelta-coordinator
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: edgedelta-coordinator/templates/compactor.yaml
-kind: Service
-apiVersion: v1
-metadata:
-  name: edgedelta-coordinator-compactor-svc
-  namespace: edgedelta
-  labels:
-    version: v1
-    kubernetes.io/cluster-service: "true"
-spec:
-  selector:
-    app.kubernetes.io/name: edgedelta-coordinator
-    app.kubernetes.io/instance: edgedelta-coordinator
-    edgedelta/agent-type: compactor
-  ports:
-    - port: 9199
-      name: compactor-port
----
-# Source: edgedelta-coordinator/templates/rollup.yaml
-kind: Service
-apiVersion: v1
-metadata:
-  name: edgedelta-coordinator-rollup-svc
-  namespace: edgedelta
-  labels:
-    version: v1
-    kubernetes.io/cluster-service: "true"
-spec:
-  selector:
-    app.kubernetes.io/name: edgedelta-coordinator
-    app.kubernetes.io/instance: edgedelta-coordinator
-    edgedelta/agent-type: rollup
-  ports:
-    - port: 9200
-      name: rollup-port
----
 # Source: edgedelta-coordinator/templates/service.yaml
 kind: Service
 apiVersion: v1
@@ -146,88 +110,6 @@ spec:
   ports:
     - port: 5555
       name: coordinator-port
----
-# Source: edgedelta-coordinator/templates/compactor.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: edgedelta-coordinator-compactor
-  namespace: edgedelta
-  labels:
-    app.kubernetes.io/name: edgedelta-coordinator
-    app.kubernetes.io/instance: edgedelta-coordinator
-    edgedelta/agent-type: compactor
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: edgedelta-coordinator
-      app.kubernetes.io/instance: edgedelta-coordinator
-      edgedelta/agent-type: compactor
-  strategy:
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: edgedelta-coordinator
-        app.kubernetes.io/instance: edgedelta-coordinator
-      
-        edgedelta/agent-type: compactor
-        version: v1
-        kubernetes.io/cluster-service: "true"
-    spec:
-      serviceAccountName: edgedelta-coordinator
-      containers:
-      - name: edgedelta-coordinator-compactor
-        image: gcr.io/edgedelta/agent:v1.36.0
-        ports:
-          - name: compactor
-            containerPort: 9199
-        env:
-          - name: ED_FLEET_TYPE
-            value: coordinator
-          - name: ED_AGENT_MODE
-            value: compactor
-          - name: ED_COMPACTOR_PORT
-            value: "9199"
-          - name: ED_K8S_NODE_NAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: spec.nodeName
-          - name: ED_K8S_NAMESPACE_NAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.namespace
-          - name: ED_K8S_POD_NAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.name
-          - name: ED_COORDINATOR_CLIENT_ENABLED
-            value: "1"
-          - name: ED_COORDINATOR_CLIENT_ENDPOINT
-            value: "ed-coordinator-svc.edgedelta.svc.cluster.local:5555"
-          
-          - name: ED_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: ed-api-key
-                key: ed-api-key
-          - name: ED_TRACE_FILES
-            value: ""
-        resources:
-            limits:
-              cpu: 2000m
-              memory: 2Gi
-            requests:
-              cpu: 200m
-              memory: 300Mi
-        imagePullPolicy: IfNotPresent
-        volumeMounts:
-      terminationGracePeriodSeconds: 60
-      volumes:
 ---
 # Source: edgedelta-coordinator/templates/deployment.yaml
 apiVersion: apps/v1
@@ -262,7 +144,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-coordinator-agent
-          image: gcr.io/edgedelta/agent:v1.36.0
+          image: gcr.io/edgedelta/agent:v1.37.0
           ports:
             - name: coordinator
               containerPort: 5555
@@ -298,12 +180,6 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.name
-            - name: ED_COMPACT_SERVICE_ENDPOINT
-              value: edgedelta-coordinator-compactor-svc.edgedelta.svc.cluster.local:9199
-            - name: ED_METRIC_ROLLUP_ENABLED
-              value: "1"
-            - name: ED_METRIC_ROLLUP_DESTINATION_OVERRIDE
-              value: edgedelta-coordinator-rollup-svc.edgedelta.svc.cluster.local:9200
           resources:
             limits:
               cpu: 2000m
@@ -315,83 +191,3 @@ spec:
           volumeMounts:
       terminationGracePeriodSeconds: 10
       volumes:
----
-# Source: edgedelta-coordinator/templates/rollup.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: edgedelta-coordinator-rollup
-  namespace: edgedelta
-  labels:
-    app.kubernetes.io/name: edgedelta-coordinator
-    app.kubernetes.io/instance: edgedelta-coordinator
-    edgedelta/agent-type: rollup
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: edgedelta-coordinator
-      app.kubernetes.io/instance: edgedelta-coordinator
-      edgedelta/agent-type: rollup
-  strategy:
-    rollingUpdate:
-      maxUnavailable: 1
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: edgedelta-coordinator
-        app.kubernetes.io/instance: edgedelta-coordinator
-      
-        edgedelta/agent-type: rollup
-    spec:
-      serviceAccountName: edgedelta-coordinator
-      containers:
-      - name: edgedelta-coordinator-rollup
-        image: gcr.io/edgedelta/agent:v1.36.0
-        ports:
-          - name: rollup
-            containerPort: 9200
-        env:
-          - name: ED_FLEET_TYPE
-            value: coordinator
-          - name: ED_METRIC_ROLLUP_SERVER_PORT
-            value: "9200"
-          - name: ED_K8S_NODE_NAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: spec.nodeName
-          - name: ED_K8S_NAMESPACE_NAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.namespace
-          - name: ED_K8S_POD_NAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.name
-          - name: ED_COORDINATOR_CLIENT_ENABLED
-            value: "1"
-          - name: ED_COORDINATOR_CLIENT_ENDPOINT
-            value: "ed-coordinator-svc.edgedelta.svc.cluster.local:5555"
-          
-          - name: ED_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: ed-api-key
-                key: ed-api-key
-          - name: ED_TRACE_FILES
-            value: ""
-          - name: ED_COMPACT_SERVICE_ENDPOINT
-            value: edgedelta-coordinator-compactor-svc.edgedelta.svc.cluster.local:9199
-        resources:
-            limits:
-              cpu: 1000m
-              memory: 1Gi
-            requests:
-              cpu: 200m
-              memory: 256Mi
-        imagePullPolicy: IfNotPresent
-      terminationGracePeriodSeconds: 60
