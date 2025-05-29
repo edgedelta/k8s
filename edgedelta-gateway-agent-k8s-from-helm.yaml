@@ -177,7 +177,7 @@ spec:
       serviceAccountName: edgedelta-gateway
       containers:
       - name: edgedelta-gateway-compactor
-        image: gcr.io/edgedelta/agent:v1.37.0
+        image: gcr.io/edgedelta/agent:v1.38.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -188,6 +188,11 @@ spec:
             value: compactor
           - name: ED_COMPACTOR_PORT
             value: "9199"
+          - name: ED_HOST_OVERRIDE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
           - name: ED_K8S_NODE_NAME
             valueFrom:
               fieldRef:
@@ -207,10 +212,8 @@ spec:
           - name: ED_API_KEY
             valueFrom:
               secretKeyRef:
-                name: ed-api-key
+                name: edgedelta-gateway-api-key
                 key: ed-api-key
-          - name: ED_TRACE_FILES
-            value: ""
         resources:
             limits:
               cpu: 2000m
@@ -256,7 +259,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-gateway-agent
-          image: gcr.io/edgedelta/agent:v1.37.0
+          image: gcr.io/edgedelta/agent:v1.38.0
           
           env:
             - name: ED_FLEET_TYPE
@@ -265,10 +268,15 @@ spec:
             - name:  ED_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: ed-api-key
+                  name: edgedelta-gateway-api-key
                   key: ed-api-key
             - name: ED_ENABLE_PARENT_K8S_CONTROLLER_DISCOVERY
               value: "1"
+            - name: ED_HOST_OVERRIDE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
             - name: ED_K8S_NODE_NAME
               valueFrom:
                 fieldRef:
@@ -334,7 +342,7 @@ spec:
       serviceAccountName: edgedelta-gateway
       containers:
       - name: edgedelta-gateway-rollup
-        image: gcr.io/edgedelta/agent:v1.37.0
+        image: gcr.io/edgedelta/agent:v1.38.0
         ports:
           - name: rollup
             containerPort: 9200
@@ -343,6 +351,11 @@ spec:
             value: gateway
           - name: ED_METRIC_ROLLUP_SERVER_PORT
             value: "9200"
+          - name: ED_HOST_OVERRIDE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
           - name: ED_K8S_NODE_NAME
             valueFrom:
               fieldRef:
@@ -362,10 +375,8 @@ spec:
           - name: ED_API_KEY
             valueFrom:
               secretKeyRef:
-                name: ed-api-key
+                name: edgedelta-gateway-api-key
                 key: ed-api-key
-          - name: ED_TRACE_FILES
-            value: ""
           - name: ED_COMPACT_SERVICE_ENDPOINT
             value: edgedelta-gateway-compactor-svc.edgedelta.svc.cluster.local:9199
         resources:

@@ -144,7 +144,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-coordinator-agent
-          image: gcr.io/edgedelta/agent:v1.37.0
+          image: gcr.io/edgedelta/agent:v1.38.0
           ports:
             - name: coordinator
               containerPort: 5555
@@ -161,10 +161,15 @@ spec:
             - name:  ED_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: ed-api-key
+                  name: edgedelta-coordinator-api-key
                   key: ed-api-key
             - name: ED_ENABLE_PARENT_K8S_CONTROLLER_DISCOVERY
               value: "1"
+            - name: ED_HOST_OVERRIDE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
             - name: ED_K8S_NODE_NAME
               valueFrom:
                 fieldRef:
