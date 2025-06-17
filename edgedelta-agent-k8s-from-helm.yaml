@@ -168,7 +168,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v1.39.0
+          image: gcr.io/edgedelta/agent:v2.0.0
           
           env:
             - name: ED_FLEET_TYPE
@@ -232,8 +232,6 @@ spec:
               readOnly: true
             - name: persisting-cursor-storage
               mountPath: /var/lib/edgedelta
-            - name: cgroup
-              mountPath: /sys/fs/cgroup
             - name: debugfs
               mountPath: /sys/kernel/debug
             - name: netns
@@ -252,9 +250,6 @@ spec:
           hostPath:
             path: /var/lib/edgedelta
             type: DirectoryOrCreate
-        - name: cgroup
-          hostPath:
-            path: /sys/fs/cgroup
         - name: debugfs
           hostPath:
             path: /sys/kernel/debug
@@ -297,7 +292,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v1.39.0
+        image: gcr.io/edgedelta/agent:v2.0.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -378,7 +373,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v1.39.0
+        image: gcr.io/edgedelta/agent:v2.0.0
         ports:
           - name: rollup
             containerPort: 9200
