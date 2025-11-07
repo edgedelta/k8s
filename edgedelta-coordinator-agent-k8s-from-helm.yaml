@@ -9,6 +9,22 @@ metadata:
     app.kubernetes.io/name: edgedelta-coordinator
     app.kubernetes.io/instance: edgedelta-coordinator
 ---
+# Source: edgedelta-coordinator/templates/claims.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: edgedelta-coordinator
+  namespace: edgedelta
+  labels:
+    app.kubernetes.io/name: edgedelta-coordinator
+    app.kubernetes.io/instance: edgedelta-coordinator
+spec:
+  accessModes: 
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
 # Source: edgedelta-coordinator/templates/service_account.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -144,19 +160,23 @@ spec:
       containers:
         # agent container
         - name: edgedelta-coordinator-agent
-          image: gcr.io/edgedelta/agent:v2.6.0
+          image: gcr.io/edgedelta/agent:v2.7.0
           ports:
             - name: coordinator
               containerPort: 5555
           env:
             - name: ED_FLEET_TYPE
               value: coordinator
+            - name: ED_DISABLE_SAMPLE_COLLECTOR
+              value: "1"
             - name: ED_COORDINATOR_SERVER_ENABLED
               value: "1"
             - name: ED_COORDINATOR_SERVER_PORT
               value: "5555"
             - name: ED_COORDINATOR_USE_BACKEND
               value: "1"
+            - name: ED_DATA_PATH
+              value: "/edgedelta/data"
             
             - name:  ED_API_KEY
               valueFrom:
@@ -194,5 +214,10 @@ spec:
               memory: 256Mi
           imagePullPolicy: IfNotPresent
           volumeMounts:
+            - name: data-volume
+              mountPath: /edgedelta/data
       terminationGracePeriodSeconds: 10
       volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: edgedelta-coordinator

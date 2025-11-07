@@ -175,11 +175,13 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v2.6.0
+          image: gcr.io/edgedelta/agent:v2.7.0
           
           env:
             - name: ED_FLEET_TYPE
               value: edge
+            - name: ED_DISABLE_SAMPLE_COLLECTOR
+              value: "1"
             
             - name: ED_API_KEY
               valueFrom:
@@ -299,13 +301,15 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v2.6.0
+        image: gcr.io/edgedelta/agent:v2.7.0
         ports:
           - name: compactor
             containerPort: 9199
         env:
           - name: ED_FLEET_TYPE
             value: edge
+          - name: ED_DISABLE_SAMPLE_COLLECTOR
+            value: "1"
           - name: ED_AGENT_MODE
             value: compactor
           - name: ED_COMPACTOR_PORT
@@ -380,13 +384,15 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v2.6.0
+        image: gcr.io/edgedelta/agent:v2.7.0
         ports:
           - name: rollup
             containerPort: 9200
         env:
           - name: ED_FLEET_TYPE
             value: edge
+          - name: ED_DISABLE_SAMPLE_COLLECTOR
+            value: "1"
           - name: ED_METRIC_ROLLUP_SERVER_PORT
             value: "9200"
           - name: ED_HOST_OVERRIDE
