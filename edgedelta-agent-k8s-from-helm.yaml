@@ -175,7 +175,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v2.8.0
+          image: gcr.io/edgedelta/agent:v2.9.0
           
           env:
             - name: ED_FLEET_TYPE
@@ -301,7 +301,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v2.8.0
+        image: gcr.io/edgedelta/agent:v2.9.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -384,7 +384,7 @@ spec:
       serviceAccountName: edgedelta
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v2.8.0
+        image: gcr.io/edgedelta/agent:v2.9.0
         ports:
           - name: rollup
             containerPort: 9200
