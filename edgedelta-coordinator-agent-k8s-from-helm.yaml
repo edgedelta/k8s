@@ -160,7 +160,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-coordinator-agent
-          image: gcr.io/edgedelta/agent:v2.10.0
+          image: gcr.io/edgedelta/agent:v2.11.0
           ports:
             - name: coordinator
               containerPort: 5555
