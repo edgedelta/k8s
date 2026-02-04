@@ -35,59 +35,25 @@ metadata:
     app.kubernetes.io/name: edgedelta-coordinator
     app.kubernetes.io/instance: edgedelta-coordinator
 rules:
-- apiGroups: [""] # "" indicates the core API group
-  resources:
-  - namespaces
-  - pods
-  - pods/log
-  - events
-  - nodes
-  - nodes/metrics
-  - services
-  verbs:
-  - get
-  - watch
-  - list
-- apiGroups: [""] # "" indicates the core API group
-  resources:
-  - events
-  verbs:
-  - create
+# ClusterRole rules (from values.yaml clusterRoleRules)
+- apiGroups: [""]
+  resources: ["namespaces","pods","pods/log","events","nodes","nodes/metrics","services"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create"]
 - apiGroups: ["coordination.k8s.io"]
-  resources:
-  - leases
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+  resources: ["leases"]
+  verbs: ["get","list","watch","create","update","patch","delete"]
 - apiGroups: ["metrics.k8s.io"]
-  resources:
-  - pods
-  - nodes
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups: ["apps"] # "" indicates the apps API group
-  resources:
-  - daemonsets
-  - deployments
-  - replicasets
-  - statefulsets
-  verbs:
-  - watch
-  - list
-- apiGroups: ["batch"] # "" indicates the batch API group
-  resources:
-  - jobs
-  - cronjobs
-  verbs:
-  - watch
-  - list
+  resources: ["pods","nodes"]
+  verbs: ["get","list","watch"]
+- apiGroups: ["apps"]
+  resources: ["daemonsets","deployments","replicasets","statefulsets"]
+  verbs: ["watch","list"]
+- apiGroups: ["batch"]
+  resources: ["jobs","cronjobs"]
+  verbs: ["watch","list"]
 # This is needed since OpenShift uses different KSM package which requires authentication
 ---
 # Source: edgedelta-coordinator/templates/service_account.yaml
@@ -160,7 +126,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-coordinator-agent
-          image: gcr.io/edgedelta/agent:v2.11.0
+          image: gcr.io/edgedelta/agent:v2.12.0
           ports:
             - name: coordinator
               containerPort: 5555

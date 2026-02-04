@@ -19,67 +19,28 @@ metadata:
     app.kubernetes.io/name: edgedelta-gateway
     app.kubernetes.io/instance: edgedelta-gateway
 rules:
-- apiGroups: [""] # "" indicates the core API group
-  resources:
-  - namespaces
-  - pods
-  - pods/log
-  - events
-  - nodes
-  - nodes/metrics
-  - services
-  - endpoints
-  verbs:
-  - get
-  - watch
-  - list
-- apiGroups: [""] # "" indicates the core API group
-  resources:
-  - events
-  verbs:
-  - create
+# ClusterRole rules (from values.yaml clusterRoleRules)
+- apiGroups: [""]
+  resources: ["namespaces","pods","pods/log","events","nodes","nodes/metrics","services","endpoints"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create"]
 - apiGroups: ["discovery.k8s.io"]
-  resources:
-  - endpointslices
-  verbs:
-  - get
-  - watch
-  - list
+  resources: ["endpointslices"]
+  verbs: ["get","watch","list"]
 - apiGroups: ["coordination.k8s.io"]
-  resources:
-  - leases
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+  resources: ["leases"]
+  verbs: ["get","list","watch","create","update","patch","delete"]
 - apiGroups: ["metrics.k8s.io"]
-  resources:
-  - pods
-  - nodes
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups: ["apps"] # "" indicates the apps API group
-  resources:
-  - daemonsets
-  - deployments
-  - replicasets
-  - statefulsets
-  verbs:
-  - watch
-  - list
-- apiGroups: ["batch"] # "" indicates the batch API group
-  resources:
-  - jobs
-  - cronjobs
-  verbs:
-  - watch
-  - list
+  resources: ["pods","nodes"]
+  verbs: ["get","list","watch"]
+- apiGroups: ["apps"]
+  resources: ["daemonsets","deployments","replicasets","statefulsets"]
+  verbs: ["watch","list"]
+- apiGroups: ["batch"]
+  resources: ["jobs","cronjobs"]
+  verbs: ["watch","list"]
 # This is needed since OpenShift uses different KSM package which requires authentication
 ---
 # Source: edgedelta-gateway/templates/service_account.yaml
@@ -184,7 +145,7 @@ spec:
       serviceAccountName: edgedelta-gateway
       containers:
       - name: edgedelta-gateway-compactor
-        image: gcr.io/edgedelta/agent:v2.11.0
+        image: gcr.io/edgedelta/agent:v2.12.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -268,7 +229,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-gateway-agent
-          image: gcr.io/edgedelta/agent:v2.11.0
+          image: gcr.io/edgedelta/agent:v2.12.0
           
           env:
             - name: ED_FLEET_TYPE
@@ -353,7 +314,7 @@ spec:
       serviceAccountName: edgedelta-gateway
       containers:
       - name: edgedelta-gateway-rollup
-        image: gcr.io/edgedelta/agent:v2.11.0
+        image: gcr.io/edgedelta/agent:v2.12.0
         ports:
           - name: rollup
             containerPort: 9200
