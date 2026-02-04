@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: edgedelta-agent
-        image: gcr.io/edgedelta/agent:v2.11.0
+        image: gcr.io/edgedelta/agent:v2.12.0
         env:
           - name: ED_API_KEY
             valueFrom:
