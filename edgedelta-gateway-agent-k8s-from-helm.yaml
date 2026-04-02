@@ -143,9 +143,11 @@ spec:
         kubernetes.io/cluster-service: "true"
     spec:
       serviceAccountName: edgedelta-gateway
+      securityContext:
+        fsGroupChangePolicy: OnRootMismatch
       containers:
       - name: edgedelta-gateway-compactor
-        image: gcr.io/edgedelta/agent:v2.13.0
+        image: gcr.io/edgedelta/agent:v2.14.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -226,10 +228,12 @@ spec:
         edgedelta/agent-type: processor
     spec:
       serviceAccountName: edgedelta-gateway
+      securityContext:
+        fsGroupChangePolicy: OnRootMismatch
       containers:
         # agent container
         - name: edgedelta-gateway-agent
-          image: gcr.io/edgedelta/agent:v2.13.0
+          image: gcr.io/edgedelta/agent:v2.14.0
           
           env:
             - name: ED_FLEET_TYPE
@@ -312,9 +316,11 @@ spec:
         edgedelta/agent-type: rollup
     spec:
       serviceAccountName: edgedelta-gateway
+      securityContext:
+        fsGroupChangePolicy: OnRootMismatch
       containers:
       - name: edgedelta-gateway-rollup
-        image: gcr.io/edgedelta/agent:v2.13.0
+        image: gcr.io/edgedelta/agent:v2.14.0
         ports:
           - name: rollup
             containerPort: 9200

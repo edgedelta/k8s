@@ -123,10 +123,12 @@ spec:
         edgedelta/agent-type: processor
     spec:
       serviceAccountName: edgedelta-coordinator
+      securityContext:
+        fsGroupChangePolicy: OnRootMismatch
       containers:
         # agent container
         - name: edgedelta-coordinator-agent
-          image: gcr.io/edgedelta/agent:v2.13.0
+          image: gcr.io/edgedelta/agent:v2.14.0
           ports:
             - name: coordinator
               containerPort: 5555
