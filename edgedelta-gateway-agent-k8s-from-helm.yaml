@@ -147,7 +147,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
       - name: edgedelta-gateway-compactor
-        image: gcr.io/edgedelta/agent:v2.14.0
+        image: gcr.io/edgedelta/agent:v2.15.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -233,7 +233,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-gateway-agent
-          image: gcr.io/edgedelta/agent:v2.14.0
+          image: gcr.io/edgedelta/agent:v2.15.0
           
           env:
             - name: ED_FLEET_TYPE
@@ -320,7 +320,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
       - name: edgedelta-gateway-rollup
-        image: gcr.io/edgedelta/agent:v2.14.0
+        image: gcr.io/edgedelta/agent:v2.15.0
         ports:
           - name: rollup
             containerPort: 9200
