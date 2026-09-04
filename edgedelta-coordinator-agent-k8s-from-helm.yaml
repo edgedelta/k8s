@@ -8,6 +8,7 @@ metadata:
   labels:
     app.kubernetes.io/name: edgedelta-coordinator
     app.kubernetes.io/instance: edgedelta-coordinator
+
 ---
 # Source: edgedelta-coordinator/templates/claims.yaml
 apiVersion: v1
@@ -24,6 +25,7 @@ spec:
   resources:
     requests:
       storage: 1Gi
+
 ---
 # Source: edgedelta-coordinator/templates/service_account.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -55,6 +57,7 @@ rules:
   resources: ["jobs","cronjobs"]
   verbs: ["watch","list"]
 # This is needed since OpenShift uses different KSM package which requires authentication
+
 ---
 # Source: edgedelta-coordinator/templates/service_account.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -73,6 +76,7 @@ roleRef:
   kind: ClusterRole
   name: edgedelta-coordinator
   apiGroup: rbac.authorization.k8s.io
+
 ---
 # Source: edgedelta-coordinator/templates/service.yaml
 kind: Service
@@ -128,7 +132,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-coordinator-agent
-          image: gcr.io/edgedelta/agent:v2.23.0
+          image: gcr.io/edgedelta/agent:v2.24.0
           ports:
             - name: coordinator
               containerPort: 5555

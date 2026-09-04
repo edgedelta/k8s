@@ -8,6 +8,7 @@ metadata:
   labels:
     app.kubernetes.io/name: edgedelta
     app.kubernetes.io/instance: edgedelta
+
 ---
 # Source: edgedelta/templates/service_account.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -54,6 +55,7 @@ rules:
   resources: ["jobs","cronjobs"]
   verbs: ["get","list","watch"]
 # This is needed since OpenShift uses different KSM package which requires authentication
+
 ---
 # Source: edgedelta/templates/service_account.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -72,6 +74,7 @@ roleRef:
   kind: ClusterRole
   name: edgedelta
   apiGroup: rbac.authorization.k8s.io
+
 ---
 # Source: edgedelta/templates/compactor.yaml
 kind: Service
@@ -90,6 +93,7 @@ spec:
   ports:
     - port: 9199
       name: compactor-port
+
 ---
 # Source: edgedelta/templates/rollup.yaml
 kind: Service
@@ -108,6 +112,7 @@ spec:
   ports:
     - port: 9200
       name: rollup-port
+
 ---
 # Source: edgedelta/templates/daemonset.yaml
 apiVersion: apps/v1
@@ -150,7 +155,7 @@ spec:
       containers:
         # agent container
         - name: edgedelta-agent
-          image: gcr.io/edgedelta/agent:v2.23.0
+          image: gcr.io/edgedelta/agent:v2.24.0
           
           env:
             - name: ED_FLEET_TYPE
@@ -278,7 +283,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
       - name: edgedelta-compactor
-        image: gcr.io/edgedelta/agent:v2.23.0
+        image: gcr.io/edgedelta/agent:v2.24.0
         ports:
           - name: compactor
             containerPort: 9199
@@ -328,6 +333,7 @@ spec:
         volumeMounts:
       terminationGracePeriodSeconds: 60
       volumes:
+
 ---
 # Source: edgedelta/templates/rollup.yaml
 apiVersion: apps/v1
@@ -363,7 +369,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
       - name: edgedelta-rollup
-        image: gcr.io/edgedelta/agent:v2.23.0
+        image: gcr.io/edgedelta/agent:v2.24.0
         ports:
           - name: rollup
             containerPort: 9200
